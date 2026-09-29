@@ -3,7 +3,7 @@
 
 package kvstore
 
-import "github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+import "github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 
 type Store interface {
 	KVStore

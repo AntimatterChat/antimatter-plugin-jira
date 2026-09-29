@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 func TestGetJiraBaseURLTrimsTrailingSlash(t *testing.T) {

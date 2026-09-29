@@ -20,8 +20,8 @@ import (
 	"golang.org/x/oauth2"
 	oauth2_jira "golang.org/x/oauth2/jira"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 type cloudInstance struct {

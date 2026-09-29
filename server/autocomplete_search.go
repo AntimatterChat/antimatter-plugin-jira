@@ -9,7 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 func (p *Plugin) httpGetAutoCompleteFields(w http.ResponseWriter, r *http.Request) (int, error) {

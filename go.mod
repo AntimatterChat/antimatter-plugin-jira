@@ -1,4 +1,4 @@
-module github.com/mattermost/mattermost-plugin-jira
+module github.com/antimatterchat/antimatter-plugin-jira
 
 go 1.25.8
 

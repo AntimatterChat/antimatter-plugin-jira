@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 func TestNormalizeInstallURL(t *testing.T) {

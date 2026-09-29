@@ -19,8 +19,8 @@ import (
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest/mock"
 	"github.com/mattermost/mattermost/server/public/pluginapi"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 func TestCloudOAuthMigration(t *testing.T) {

@@ -6,7 +6,7 @@ ifdef MM_RUDDER_PLUGINS_PROD
   RUDDER_WRITE_KEY = $(MM_RUDDER_PLUGINS_PROD)
 endif
 
-LDFLAGS += -X "github.com/mattermost/mattermost-plugin-jira/server/telemetry.rudderWriteKey=$(RUDDER_WRITE_KEY)"
+LDFLAGS += -X "github.com/antimatterchat/antimatter-plugin-jira/server/telemetry.rudderWriteKey=$(RUDDER_WRITE_KEY)"
 
 .PHONY: jira
 jira:

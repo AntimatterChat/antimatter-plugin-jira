@@ -16,7 +16,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 // TestWebhookWorkerDeliveryGuard covers gating subscription delivery into DM/GM channels

@@ -19,7 +19,7 @@ import (
 	"github.com/mattermost/mattermost/server/public/pluginapi"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 func TestValidateSubscription(t *testing.T) {

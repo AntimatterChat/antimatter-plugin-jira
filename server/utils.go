@@ -20,8 +20,8 @@ import (
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/pluginapi"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/kvstore"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/kvstore"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 const (

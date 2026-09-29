@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 type testInstance struct {

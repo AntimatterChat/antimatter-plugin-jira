@@ -23,8 +23,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/trivago/tgo/tcontainer"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/kvstore"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/kvstore"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 const (

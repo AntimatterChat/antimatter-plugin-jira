@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 const TokenExpiryTimeBufferInMinutes = 5

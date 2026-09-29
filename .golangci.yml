@@ -11,7 +11,7 @@ linters-settings:
   gofmt:
     simplify: true
   goimports:
-    local-prefixes: github.com/mattermost/mattermost-plugin-jira
+    local-prefixes: github.com/antimatterchat/antimatter-plugin-jira
   govet:
     enable-all: true
     disable:

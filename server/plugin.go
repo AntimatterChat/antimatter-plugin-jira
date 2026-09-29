@@ -31,8 +31,8 @@ import (
 	"github.com/mattermost-community/mattermost-plugin-autolink/server/autolink"
 	"github.com/mattermost-community/mattermost-plugin-autolink/server/autolinkclient"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/telemetry"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/telemetry"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 const (

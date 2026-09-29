@@ -6,7 +6,7 @@ package main
 import (
 	"github.com/pkg/errors"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/telemetry"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/telemetry"
 )
 
 func (p *Plugin) TrackEvent(event string, properties map[string]interface{}) {

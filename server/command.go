@@ -18,9 +18,9 @@ import (
 	"github.com/mattermost/mattermost/server/public/pluginapi/experimental/command"
 	"github.com/mattermost/mattermost/server/public/pluginapi/experimental/flow"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/utils"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/kvstore"
-	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/kvstore"
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils/types"
 )
 
 const commandTrigger = "jira"
