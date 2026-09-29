@@ -24,7 +24,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/enterprise"
 	"github.com/mattermost/mattermost-plugin-jira/server/utils/kvstore"
 	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
 )
@@ -518,11 +517,6 @@ func TestPlugin_ExecuteCommand_Installation(t *testing.T) {
 			})
 			isSendEphemeralPostCalled := false
 
-			// add valid license
-			var license model.License
-			license.SkuShortName = "professional"
-
-			api.On("GetLicense").Return(&license)
 			api.On("GetConfig").Return(&model.Config{})
 			api.On("RegisterCommand", mock.Anything).Return(nil)
 			api.On("GetBundlePath").Return("", nil)
@@ -550,7 +544,6 @@ func TestPlugin_ExecuteCommand_Installation(t *testing.T) {
 			p.instanceStore = p.getMockInstanceStoreKV(tt.numInstances)
 			p.secretsStore = store
 			p.userStore = getMockUserStoreKV()
-			p.enterpriseChecker = enterprise.NewEnterpriseChecker(api)
 
 			cmdResponse, err := p.ExecuteCommand(&plugin.Context{}, tt.commandArgs)
 			require.Nil(t, err)

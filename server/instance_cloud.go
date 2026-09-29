@@ -78,13 +78,6 @@ func (p *Plugin) installInactiveCloudInstance(rawURL string, actingUserID string
 		return "", "", errors.New("a secure HTTPS URL is required")
 	}
 
-	instances, _ := p.instanceStore.LoadInstances()
-	if !p.enterpriseChecker.HasEnterpriseFeatures() {
-		if instances != nil && len(instances.IDs()) > 0 {
-			return "", "", errors.New(licenseErrorString)
-		}
-	}
-
 	// Create an "uninitialized" instance of Jira Cloud that will
 	// receive the /installed callback
 	setupRoutingSecret, err = p.instanceStore.CreateInactiveCloudInstance(types.ID(jiraURL), actingUserID)

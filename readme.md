@@ -7,7 +7,7 @@
 
 This plugin supports a two-way integration between Mattermost and Jira. Jira Core and Jira Software products, for Server, Data Center, and Cloud platforms are supported. It has been tested with versions 7 and 8.
 
-For versions v3.0 and later of this plugin, support for multiple Jira instances is offered for Mattermost Professional, Enterprise and Enterprise Advanced plans, configured using [Administrator Slash Commands](https://github.com/mattermost/mattermost-plugin-jira#readme).
+For versions v3.0 and later of this plugin, multiple Jira instances are supported, configured using [Administrator Slash Commands](https://github.com/mattermost/mattermost-plugin-jira#readme).
 
 See the [Mattermost Product Documentation](https://docs.mattermost.com/integrations-guide/jira.html) for details on installing, configuring, enabling, and using this Mattermost integration.
 
@@ -22,13 +22,12 @@ Follow these steps to spin up Mattermost and Jira locally so you can iterate on 
 - Docker Desktop (for Jira Server + optional Postgres)
 - The [mattermost](https://github.com/mattermost/mattermost) repo cloned locally alongside this one
 
-### 1. Run Mattermost with the enterprise repo beside it
+### 1. Run Mattermost
 
-Clone both repos into the same parent directory so the enterprise code is detected automatically, then start the server:
+Clone the server repo, then start the server:
 
 ```bash
 git clone https://github.com/mattermost/mattermost.git
-git clone https://github.com/mattermost/enterprise.git
 
 cd mattermost/server
 make run
@@ -157,7 +156,7 @@ For instance, `/jira assign EXT-20 john` transitions the issue key **EXT-20** to
 
 ## License
 
-This repository is licensed under the Apache 2.0 License, except for the [server/enterprise](server/enterprise) directory which is licensed under the [Mattermost Source Available License](LICENSE.enterprise). See [Mattermost Source Available License](https://docs.mattermost.com/overview/faq.html#mattermost-source-available-license) to learn more.
+This repository is licensed under the [Apache 2.0 License](LICENSE.txt).
 
 ## Development
 

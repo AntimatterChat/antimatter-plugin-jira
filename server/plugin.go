@@ -31,7 +31,6 @@ import (
 	"github.com/mattermost-community/mattermost-plugin-autolink/server/autolink"
 	"github.com/mattermost-community/mattermost-plugin-autolink/server/autolinkclient"
 
-	"github.com/mattermost/mattermost-plugin-jira/server/enterprise"
 	"github.com/mattermost/mattermost-plugin-jira/server/telemetry"
 	"github.com/mattermost/mattermost-plugin-jira/server/utils/types"
 )
@@ -154,10 +153,6 @@ type Plugin struct {
 
 	// channel to distribute work to the webhook processors
 	webhookQueue chan *webhookMessage
-
-	// service that determines if this Mattermost instance has access to
-	// enterprise features
-	enterpriseChecker enterprise.Checker
 
 	// Telemetry package copied inside repository, should be changed
 	// to pluginapi's one (0.1.3+) when min_server_version is safe to point at 7.x
@@ -441,8 +436,6 @@ func (p *Plugin) OnActivate() error {
 	for i := 0; i < WebhookMaxProcsPerServer; i++ {
 		go webhookWorker{i, p, p.webhookQueue}.work()
 	}
-
-	p.enterpriseChecker = enterprise.NewEnterpriseChecker(p.API)
 
 	go func() {
 		p.SetupAutolink(instances)

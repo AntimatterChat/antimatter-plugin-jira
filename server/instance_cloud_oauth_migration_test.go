@@ -529,9 +529,6 @@ func TestCloudOAuthMigration(t *testing.T) {
 			p.otsStore = store
 			p.client = pluginapi.NewClient(p.API, p.Driver)
 
-			eCheck := &mockEnterpriseChecker{false}
-			p.enterpriseChecker = eCheck
-
 			tempDir, err := os.MkdirTemp("", "sampledir")
 			require.NoError(t, err)
 
@@ -562,12 +559,4 @@ func TestCloudOAuthMigration(t *testing.T) {
 			tc.runAssertions(p, api, installedInstanceID)
 		})
 	}
-}
-
-type mockEnterpriseChecker struct {
-	hasEnterpriseFeatures bool
-}
-
-func (mec *mockEnterpriseChecker) HasEnterpriseFeatures() bool {
-	return mec.hasEnterpriseFeatures
 }
