@@ -542,10 +542,10 @@ export function handleConnectFlow(instanceID?: string) {
 
         // TODO <> connectedInstances is still 2 after uninstalling an instance
         if (instances.length === connectedInstances.length) {
-            let postMessage = `Your Mattermost account is already linked to ${instances[0].instance_id}\n`;
+            let postMessage = `Your Antimatter account is already linked to ${instances[0].instance_id}\n`;
             if (instances.length > 1) {
                 const bullets = connectedInstances.map((instance) => `* ${instance.instance_id}`).join('\n');
-                postMessage = `Your Mattermost account is already linked to all installed Jira instances:\n${bullets}\n`;
+                postMessage = `Your Antimatter account is already linked to all installed Jira instances:\n${bullets}\n`;
             }
             postMessage += 'Please use `/jira disconnect` to disconnect.';
             dispatch(sendEphemeralPost(postMessage));
@@ -561,7 +561,7 @@ export function handleConnectFlow(instanceID?: string) {
 
             if (alreadyConnected) {
                 dispatch(sendEphemeralPost(
-                    'Your Jira account at ' + instanceID + ' is already linked to your Mattermost account. Please use `/jira disconnect` to disconnect.'));
+                    'Your Jira account at ' + instanceID + ' is already linked to your Antimatter account. Please use `/jira disconnect` to disconnect.'));
                 return;
             }
 
@@ -574,7 +574,7 @@ export function handleConnectFlow(instanceID?: string) {
         }
 
         if (instance && instance.type === InstanceType.SERVER && isDesktopApp() && !isMinimumDesktopAppVersion(4, 3, 0)) { // eslint-disable-line no-magic-numbers
-            const errMsg = 'Your version of the Mattermost desktop client does not support authenticating between Jira and Mattermost directly. To connect your Jira account with Mattermost, please go to Mattermost via your web browser and type `/jira connect`, or [check the Mattermost download page](https://mattermost.com/download/#mattermostApps) to get the latest version of the desktop client.';
+            const errMsg = 'Your version of the Antimatter desktop client does not support authenticating between Jira and Antimatter directly. To connect your Jira account with Antimatter, please go to Antimatter via your web browser and type `/jira connect`, or [check the Antimatter download page](https://docs.antimatter.example/download/#antimatterApps) to get the latest version of the desktop client.';
             dispatch(sendEphemeralPost(errMsg));
             return;
         }

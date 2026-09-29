@@ -142,7 +142,7 @@ export default class Hooks {
         if (!isUserConnected(this.store.getState())) {
             await this.store.dispatch(getConnected());
             if (!isUserConnected(this.store.getState())) {
-                this.store.dispatch(sendEphemeralPost('Your Mattermost account is not connected to Jira. Please use `/jira connect` to connect your account, then try again.'));
+                this.store.dispatch(sendEphemeralPost('Your Antimatter account is not connected to Jira. Please use `/jira connect` to connect your account, then try again.'));
                 return false;
             }
         }

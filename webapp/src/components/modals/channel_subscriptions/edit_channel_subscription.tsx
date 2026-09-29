@@ -555,7 +555,7 @@ export default class EditChannelSubscription extends PureComponent<Props, State>
                             )}
                             <div className='channel-subscriptions-modal__learnMore'>
                                 <a
-                                    href='https://github.com/mattermost/mattermost-plugin-jira#create-a-channel-subscription'
+                                    href='https://github.com/antimatterchat/antimatter-plugin-jira#create-a-channel-subscription'
                                     target='_blank'
                                     rel='noopener noreferrer'
                                 >{'Learn More'}</a>
