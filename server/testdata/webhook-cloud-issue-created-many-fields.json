@@ -238,7 +238,7 @@
           },
           "timespent": null,
           "customfield_10030": "0",
-          "customfield_10031": "mattermost.com",
+          "customfield_10031": "antimatter.example",
           "project": {
               "self": "https://mmtest.atlassian.net/rest/api/2/project/10008",
               "id": "10008",
@@ -253,7 +253,7 @@
                   "32x32": "https://mmtest.atlassian.net/secure/projectavatar?size=medium&s=medium&pid=10008&avatarId=10417"
               }
           },
-          "customfield_10032": "mattermost.com",
+          "customfield_10032": "antimatter.example",
           "customfield_10033": "true",
           "customfield_10034": "2019-08-27 19:43:24.193",
           "aggregatetimespent": null,

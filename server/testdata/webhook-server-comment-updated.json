@@ -5,7 +5,7 @@
         "self": "http://sales-jira.centralus.cloudapp.azure.com:8080/rest/api/2/user?username=levbrouk",
         "name": "levbrouk",
         "key": "levbrouk",
-        "emailAddress": "lev@mattermost.com",
+        "emailAddress": "lev@antimatter.example",
         "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/8c504b6c8f13cf9dc9ffb8af57323320?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/8c504b6c8f13cf9dc9ffb8af57323320?d=mm&s=24",
@@ -23,7 +23,7 @@
             "self": "http://sales-jira.centralus.cloudapp.azure.com:8080/rest/api/2/user?username=levbrouk",
             "name": "levbrouk",
             "key": "levbrouk",
-            "emailAddress": "lev@mattermost.com",
+            "emailAddress": "lev@antimatter.example",
             "avatarUrls": {
                 "48x48": "https://www.gravatar.com/avatar/8c504b6c8f13cf9dc9ffb8af57323320?d=mm&s=48",
                 "24x24": "https://www.gravatar.com/avatar/8c504b6c8f13cf9dc9ffb8af57323320?d=mm&s=24",
@@ -39,7 +39,7 @@
             "self": "http://sales-jira.centralus.cloudapp.azure.com:8080/rest/api/2/user?username=levbrouk",
             "name": "levbrouk",
             "key": "levbrouk",
-            "emailAddress": "lev@mattermost.com",
+            "emailAddress": "lev@antimatter.example",
             "avatarUrls": {
                 "48x48": "https://www.gravatar.com/avatar/8c504b6c8f13cf9dc9ffb8af57323320?d=mm&s=48",
                 "24x24": "https://www.gravatar.com/avatar/8c504b6c8f13cf9dc9ffb8af57323320?d=mm&s=24",

@@ -1939,7 +1939,7 @@ func TestRemoveSubscriptionsForChannel(t *testing.T) {
 
 func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 	botUserID := "botuser___________________"
-	antimatterUserID := "mmuser____________________"
+	antimatterUserID := "amuser____________________"
 	otherMemberID := "othermember________________"
 	dmChannelID := "dmchannelaaaaaaaaaaaaaaaa"
 	gmChannelID := "gmchannelbbbbbbbbbbbbbbbb"

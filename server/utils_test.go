@@ -324,8 +324,8 @@ func TestParseJIRAUsernamesFromText(t *testing.T) {
 		{Text: "[~jira-user+6]", Expected: []string{"jira-user+6"}},
 		{Text: "[~2023]", Expected: []string{"2023"}},
 		{Text: "[~jira.user@company.com]", Expected: []string{"jira.user@company.com"}},
-		{Text: "[~jira_user@mattermost.com]", Expected: []string{"jira_user@mattermost.com"}},
-		{Text: "[~jira-unique-user@mattermost.com] [~jira-unique-user@mattermost.com] [~jira-unique-user@mattermost.com]", Expected: []string{"jira-unique-user@mattermost.com"}},
+		{Text: "[~jira_user@antimatter.example]", Expected: []string{"jira_user@antimatter.example"}},
+		{Text: "[~jira-unique-user@antimatter.example] [~jira-unique-user@antimatter.example] [~jira-unique-user@antimatter.example]", Expected: []string{"jira-unique-user@antimatter.example"}},
 		{Text: "[jira_incorrect_user]", Expected: []string{}},
 		{Text: "[~jira_user_reviewer], Hi! Can you review the PR from [~jira_user_contributor]? Thanks!", Expected: []string{"jira_user_reviewer", "jira_user_contributor"}},
 	}

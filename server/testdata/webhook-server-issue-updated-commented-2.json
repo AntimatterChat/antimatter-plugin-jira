@@ -81,7 +81,7 @@
         "self": "http://test-server.azure.com:8080/rest/api/2/user?username=dylan",
         "name": "dylan",
         "key": "dylan",
-        "emailAddress": "dylan@mattermost.com",
+        "emailAddress": "dylan@antimatter.example",
         "avatarUrls": {
           "48x48": "http://test-server.azure.com:8080/secure/useravatar?avatarId=10339",
           "24x24": "http://test-server.azure.com:8080/secure/useravatar?size=small&avatarId=10339",
@@ -109,7 +109,7 @@
       },
       "components": [],
       "timeoriginalestimate": null,
-      "description": "test\n\n_Issue created from a [message in Mattermost|https://chrisp.ngrok.io/testteam/pl/449w553cajrbfewz581uoxmb8o]_.",
+      "description": "test\n\n_Issue created from a [message in Antimatter|https://chrisp.ngrok.io/testteam/pl/449w553cajrbfewz581uoxmb8o]_.",
       "customfield_10130": null,
       "customfield_10131": null,
       "customfield_10132": null,
@@ -125,7 +125,7 @@
         "self": "http://test-server.azure.com:8080/rest/api/2/user?username=creator.user",
         "name": "creator.user",
         "key": "creator.user",
-        "emailAddress": "creator.user@mattermost.com",
+        "emailAddress": "creator.user@antimatter.example",
         "avatarUrls": {
           "48x48": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=48",
           "24x24": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=24",
@@ -141,7 +141,7 @@
         "self": "http://test-server.azure.com:8080/rest/api/2/user?username=creator.user",
         "name": "creator.user",
         "key": "creator.user",
-        "emailAddress": "creator.user@mattermost.com",
+        "emailAddress": "creator.user@antimatter.example",
         "avatarUrls": {
           "48x48": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=48",
           "24x24": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=24",
@@ -219,7 +219,7 @@
               "self": "http://test-server.azure.com:8080/rest/api/2/user?username=creator.user",
               "name": "creator.user",
               "key": "creator.user",
-              "emailAddress": "creator.user@mattermost.com",
+              "emailAddress": "creator.user@antimatter.example",
               "avatarUrls": {
                 "48x48": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=48",
                 "24x24": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=24",
@@ -235,7 +235,7 @@
               "self": "http://test-server.azure.com:8080/rest/api/2/user?username=creator.user",
               "name": "creator.user",
               "key": "creator.user",
-              "emailAddress": "creator.user@mattermost.com",
+              "emailAddress": "creator.user@antimatter.example",
               "avatarUrls": {
                 "48x48": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=48",
                 "24x24": "https://www.gravatar.com/avatar/560996af2549a4e1727321247bbd4af9?d=mm&s=24",

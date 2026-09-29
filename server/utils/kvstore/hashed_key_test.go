@@ -20,7 +20,7 @@ func Test_hashKey(t *testing.T) {
 		want string
 	}{
 		{"empty", args{"", ""}, ""},
-		{"value", args{"", "https://mmtest.mattermost.com"}, "53d1d6fa60f26d84e2087f61d535d073"},
+		{"value", args{"", "https://mmtest.antimatter.example"}, "0886013a4dc1e7f98b3b972abdfd3f13"},
 		{"prefix", args{"abc_", ""}, "abc_"},
 		{"prefix value", args{"abc_", "123"}, "abc_202cb962ac59075b964b07152d234b70"},
 	}

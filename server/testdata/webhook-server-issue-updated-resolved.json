@@ -39,7 +39,7 @@
               "self": "http://some-instance-test.centralus.cloudapp.azure.com:8080/rest/api/2/project/10100",
               "id": "10100",
               "key": "TES",
-              "name": "Mattermost TEST",
+              "name": "Antimatter TEST",
               "avatarUrls": {
                   "48x48": "http://some-instance-test.centralus.cloudapp.azure.com:8080/secure/projectavatar?avatarId=10324",
                   "24x24": "http://some-instance-test.centralus.cloudapp.azure.com:8080/secure/projectavatar?size=small&avatarId=10324",
