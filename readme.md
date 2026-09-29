@@ -1,35 +1,33 @@
-# Mattermost Jira Plugin
+# Antimatter Jira Plugin
 
-[![Build Status](https://img.shields.io/circleci/project/github/mattermost/mattermost-plugin-jira/master)](https://circleci.com/gh/mattermost/mattermost-plugin-jira)
-[![Code Coverage](https://img.shields.io/codecov/c/github/mattermost/mattermost-plugin-jira/master)](https://codecov.io/gh/mattermost/mattermost-plugin-jira)
-[![Release](https://img.shields.io/github/v/release/mattermost/mattermost-plugin-jira)](https://github.com/mattermost/mattermost-plugin-jira/releases/latest)
-[![HW](https://img.shields.io/github/issues/mattermost/mattermost-plugin-jira/Up%20For%20Grabs?color=dark%20green&label=Help%20Wanted)](https://github.com/mattermost/mattermost-plugin-jira/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Up+For+Grabs%22+label%3A%22Help+Wanted%22)
+[![Build Status](https://img.shields.io/circleci/project/github/antimatterchat/antimatter-plugin-jira/master)](https://circleci.com/gh/antimatterchat/antimatter-plugin-jira)
+[![Code Coverage](https://img.shields.io/codecov/c/github/antimatterchat/antimatter-plugin-jira/master)](https://codecov.io/gh/antimatterchat/antimatter-plugin-jira)
+[![Release](https://img.shields.io/github/v/release/antimatterchat/antimatter-plugin-jira)](https://github.com/antimatterchat/antimatter-plugin-jira/releases/latest)
+[![HW](https://img.shields.io/github/issues/antimatterchat/antimatter-plugin-jira/Up%20For%20Grabs?color=dark%20green&label=Help%20Wanted)](https://github.com/antimatterchat/antimatter-plugin-jira/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Up+For+Grabs%22+label%3A%22Help+Wanted%22)
 
-This plugin supports a two-way integration between Mattermost and Jira. Jira Core and Jira Software products, for Server, Data Center, and Cloud platforms are supported. It has been tested with versions 7 and 8.
+This plugin supports a two-way integration between Antimatter and Jira. Jira Core and Jira Software products, for Server, Data Center, and Cloud platforms are supported. It has been tested with versions 7 and 8.
 
-For versions v3.0 and later of this plugin, multiple Jira instances are supported, configured using [Administrator Slash Commands](https://github.com/mattermost/mattermost-plugin-jira#readme).
+For versions v3.0 and later of this plugin, multiple Jira instances are supported, configured using [Administrator Slash Commands](https://github.com/antimatterchat/antimatter-plugin-jira#readme).
 
-See the [Mattermost Product Documentation](https://docs.mattermost.com/integrations-guide/jira.html) for details on installing, configuring, enabling, and using this Mattermost integration.
+See the [Antimatter Product Documentation](https://docs.antimatter.example/integrations-guide/jira.html) for details on installing, configuring, enabling, and using this Antimatter integration.
 
 ## Getting started locally
 
-Follow these steps to spin up Mattermost and Jira locally so you can iterate on the plugin with real APIs.
+Follow these steps to spin up Antimatter and Jira locally so you can iterate on the plugin with real APIs.
 
 ### Prerequisites
 
 - Go **1.23.x**
 - Node **18.x** and npm (yarn optional)
 - Docker Desktop (for Jira Server + optional Postgres)
-- The [mattermost](https://github.com/mattermost/mattermost) repo cloned locally alongside this one
+- The Antimatter server repo cloned locally alongside this one
 
-### 1. Run Mattermost
+### 1. Run Antimatter
 
-Clone the server repo, then start the server:
+Clone the Antimatter server repo, then start the server:
 
 ```bash
-git clone https://github.com/mattermost/mattermost.git
-
-cd mattermost/server
+cd antimatter/server
 make run
 ```
 
@@ -54,15 +52,15 @@ Restart the server if prompted.
 **Reachability tips**
 
 - `host.docker.internal` works on macOS with Docker Desktop. On Linux, specify the gateway explicitly when starting Jira (`docker run --add-host=host.docker.internal:host-gateway ...`) or use your workstation’s LAN IP in both `SiteURL` and the commands above.
-- Whichever hostname you choose, open Mattermost in your browser using that same URL as mismatches can trigger WebSocket CORS blocks and slash-command errors.
-- If Jira runs on another machine or you need external access, expose Mattermost via a tunnel or a real domain with valid HTTPS, and update the config values accordingly.
-- When you create the Application Link in Jira, supply that same externally reachable Mattermost URL. Jira reuses it to call the plugin’s endpoints.
+- Whichever hostname you choose, open Antimatter in your browser using that same URL as mismatches can trigger WebSocket CORS blocks and slash-command errors.
+- If Jira runs on another machine or you need external access, expose Antimatter via a tunnel or a real domain with valid HTTPS, and update the config values accordingly.
+- When you create the Application Link in Jira, supply that same externally reachable Antimatter URL. Jira reuses it to call the plugin’s endpoints.
 - You can sanity-check connectivity from the Jira container with `docker exec jira curl -I <your-site-url>`.
 
 ### 2. Build and install the Jira plugin
 
 ```bash
-cd ../mattermost-plugin-jira
+cd ../antimatter-plugin-jira
 npm install
 make dist
 
@@ -73,7 +71,7 @@ export AM_ADMIN_PASSWORD=admin
 make deploy
 ```
 
-If you prefer to upload manually, go to **System Console → Plugins → Upload Plugin**, select `dist/com.github.mattermost.jira-*.tar.gz`, then enable the plugin under **Plugin Management**.
+If you prefer to upload manually, go to **System Console → Plugins → Upload Plugin**, select `dist/jira-*.tar.gz`, then enable the plugin under **Plugin Management**.
 
 For a tighter edit loop, leave `make watch` running – it rebuilds and redeploys whenever you save.
 
@@ -86,55 +84,55 @@ docker run --name jira \
   atlassian/jira-software:9.4.30
 ```
 
-Open `http://localhost:8080`, request a **Server** evaluation license from [my.atlassian.com](https://my.atlassian.com/), and finish the setup wizard. Wherever the wizard asks for your Mattermost URL, use `http://host.docker.internal:8065` so the container can call back into your dev server.
+Open `http://localhost:8080`, request a **Server** evaluation license from [my.atlassian.com](https://my.atlassian.com/), and finish the setup wizard. Wherever the wizard asks for your Antimatter URL, use `http://host.docker.internal:8065` so the container can call back into your dev server.
 
 ### 4. Connect the plugin to Jira
 
-Back in Mattermost, confirm the plugin responds to `/jira help`, then install your local instance:
+Back in Antimatter, confirm the plugin responds to `/jira help`, then install your local instance:
 
 ```bash
 /jira instance install server http://localhost:8080
 ```
 
-The command guides you through creating the Application Link inside Jira, exchanging the consumer key/secret, and configuring webhooks. Once that completes, run `/jira connect` to link your Mattermost user, and use `/jira create` or `/jira subscribe` to test the round trip.
+The command guides you through creating the Application Link inside Jira, exchanging the consumer key/secret, and configuring webhooks. Once that completes, run `/jira connect` to link your Antimatter user, and use `/jira create` or `/jira subscribe` to test the round trip.
 
 At this point you can edit plugin code, let `make watch` redeploy, and immediately exercise the change against a real Jira API.
 
 ### Troubleshooting the local setup
 
-- **Plugin immediately disables itself when enabled** – check `logs/mattermost.log`. If you see `please configure the Mattermost server's SiteURL`, set `ServiceSettings.SiteURL` to a reachable address (e.g. `http://host.docker.internal:8065`) and re-enable the plugin.
+- **Plugin immediately disables itself when enabled** – check `logs/mattermost.log`. If you see `please configure the Antimatter server's SiteURL`, set `ServiceSettings.SiteURL` to a reachable address (e.g. `http://host.docker.internal:8065`) and re-enable the plugin.
 - **Upload button missing in System Console** – ensure `PluginSettings.EnableUploads` is `true` in `config/config.json`. You may need to restart the server after changing it.
-- **`./bin/mmctl` not found** – build it with `go build -o bin/mmctl ./cmd/mmctl` from the `mattermost/server` directory.
+- **`./bin/mmctl` not found** – build it with `go build -o bin/mmctl ./cmd/mmctl` from the `antimatter/server` directory.
 - **Jira setup page refuses license** – generate a **Server** evaluation key for the Server ID shown in the wizard via [my.atlassian.com](https://my.atlassian.com/). Make sure you select the Server deployment type, not Cloud.
 - **`XSRF Security Token Missing` during Jira setup** – refresh the page or restart the Docker container and re-run the wizard in a fresh browser session; the token expired.
-- **Slash commands complain about unreachable Mattermost URL** – Jira is running in a container, so `localhost` refers to the container itself. Use `http://host.docker.internal:8065` (macOS/Linux with Docker Desktop) or your machine’s LAN IP so Jira can reach Mattermost.
+- **Slash commands complain about unreachable Antimatter URL** – Jira is running in a container, so `localhost` refers to the container itself. Use `http://host.docker.internal:8065` (macOS/Linux with Docker Desktop) or your machine’s LAN IP so Jira can reach Antimatter.
 
 ## Feature summary
 
-### Jira to Mattermost notifications
+### Jira to Antimatter notifications
 
 #### Channel subscriptions
 
-Notify your team of the latest updates by sending notifications from your Jira projects to Mattermost channels. You can specify which events trigger a notification - and you can filter out certain types of notifications to keep down the noise.
+Notify your team of the latest updates by sending notifications from your Jira projects to Antimatter channels. You can specify which events trigger a notification - and you can filter out certain types of notifications to keep down the noise.
 
 #### Personal notifications: JiraBot
 
-Each user in Mattermost is connected with their own personal Jira account and notifications for issues where someone is mentioned or assigned an issue is mentioned in your own personal Jira notification bot to help everyone stay on top of their assigned issues.
+Each user in Antimatter is connected with their own personal Jira account and notifications for issues where someone is mentioned or assigned an issue is mentioned in your own personal Jira notification bot to help everyone stay on top of their assigned issues.
 
-![A personal JiraBot helps keep you on top of your relevant Jira activities](https://github.com/mattermost/mattermost-plugin-jira/assets/74422101/e15de4fe-1cb3-47d1-9b0d-538ab82ec91d)
+![A personal JiraBot helps keep you on top of your relevant Jira activities](https://github.com/antimatterchat/antimatter-plugin-jira/assets/74422101/e15de4fe-1cb3-47d1-9b0d-538ab82ec91d)
 
-### Manage Jira issues in Mattermost
+### Manage Jira issues in Antimatter
 
 #### Create Jira issues
 
-- Create Jira issues from scratch or based off of a Mattermost message easily.
-- Without leaving Mattermost's UI, quickly select the project, issue type and enter other fields to create the issue.
+- Create Jira issues from scratch or based off of an Antimatter message easily.
+- Without leaving Antimatter's UI, quickly select the project, issue type and enter other fields to create the issue.
 
   ![image](https://user-images.githubusercontent.com/13119842/59113188-985a9280-8912-11e9-9def-9a7382b4137e.png)
 
 #### Attach messages to Jira issues
 
-Keep all information in one place by attaching parts of Mattermost conversations in Jira issues as comments.  Then, on the resulting dialog, select the Jira issue you want to attach it to. You may search for issues containing specific text.
+Keep all information in one place by attaching parts of Antimatter conversations in Jira issues as comments.  Then, on the resulting dialog, select the Jira issue you want to attach it to. You may search for issues containing specific text.
 
 ![image](./assets/attach-from-post.png)
 
@@ -160,7 +158,7 @@ This repository is licensed under the [Apache 2.0 License](LICENSE.txt).
 
 ## Development
 
-This plugin contains both a server and web app portion. Read our documentation about the [Developer Workflow](https://developers.mattermost.com/integrate/plugins/developer-workflow/) and [Developer Setup](https://developers.mattermost.com/integrate/plugins/developer-setup/) for more information about developing and extending plugins.
+This plugin contains both a server and web app portion. Read our documentation about the [Developer Workflow](https://docs.antimatter.example/integrate/plugins/developer-workflow/) and [Developer Setup](https://docs.antimatter.example/integrate/plugins/developer-setup/) for more information about developing and extending plugins.
 
 ### Releasing new versions
 
@@ -213,9 +211,9 @@ To trigger a release, follow these steps:
 
 ### Environment
 
-Join the [Jira plugin channel](https://community.mattermost.com/core/channels/jira-plugin) on our community server to discuss any questions.
+Join the [Jira plugin channel](https://docs.antimatter.example/core/channels/jira-plugin) on our community server to discuss any questions.
 
-Read our documentation about the [Developer Workflow](https://developers.mattermost.com/extend/plugins/developer-workflow/) and [Developer Setup](https://developers.mattermost.com/extend/plugins/developer-setup/) for more information about developing and extending plugins.
+Read our documentation about the [Developer Workflow](https://docs.antimatter.example/extend/plugins/developer-workflow/) and [Developer Setup](https://docs.antimatter.example/extend/plugins/developer-setup/) for more information about developing and extending plugins.
 
 This plugin supports both Jira Server (self-hosted) and Jira Cloud instances. There can be slight differences in behavior between the two systems, so it's best to test with both systems individually when introducing new webhook logic, or adding a new Jira API call.
 
@@ -225,12 +223,12 @@ To test your changes against a Jira Cloud instance, we recommend starting a 14-d
 
 ### Help wanted!
 
-If you're interested in joining our community of developers who contribute to Mattermost - check out the current set of issues [that are being requested](https://github.com/mattermost/mattermost-plugin-jira/issues?q=is%3Aissue+is%3Aopen+label%3AEnhancement).
+If you're interested in joining our community of developers who contribute to Antimatter - check out the current set of issues [that are being requested](https://github.com/antimatterchat/antimatter-plugin-jira/issues?q=is%3Aissue+is%3Aopen+label%3AEnhancement).
 
-You can also find issues labeled ["Help Wanted"](https://github.com/mattermost/mattermost-plugin-jira/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+Wanted%22) in the Jira Repository that we have laid out the primary requirements for and could use some coding help from the community.
+You can also find issues labeled ["Help Wanted"](https://github.com/antimatterchat/antimatter-plugin-jira/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+Wanted%22) in the Jira Repository that we have laid out the primary requirements for and could use some coding help from the community.
 
 ### Help and support
 
-- For Mattermost customers - Please open a support case.
-- For questions, suggestions, and help, visit the [Jira Plugin channel](https://community.mattermost.com/core/channels/jira-plugin) on our Community server.
-- To report a bug, please [open an issue](https://github.com/mattermost/mattermost-plugin-jira/issues).
+- For Antimatter customers - Please open a support case.
+- For questions, suggestions, and help, visit the [Jira Plugin channel](https://docs.antimatter.example/core/channels/jira-plugin) on our Community server.
+- To report a bug, please [open an issue](https://github.com/antimatterchat/antimatter-plugin-jira/issues).
