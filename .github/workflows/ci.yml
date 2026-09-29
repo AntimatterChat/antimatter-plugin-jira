@@ -23,4 +23,4 @@ jobs:
     secrets: inherit
     with:
       dist-target: "dist"
-      s3-prefix: "mattermost-plugin-jira"
+      s3-prefix: "antimatter-plugin-jira"

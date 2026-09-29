@@ -1,7 +1,7 @@
 version: '3'
 services:
   jira:
-    container_name: mattermost-jira
+    container_name: antimatter-jira
     image: atlassian/jira-software:latest # It is recommended to test with the latest version 9, as most of the customers are using this version.
     # image: atlassian/jira-software:8 # Alternatively you can test with the previous stable version 8 as well.
     ports:
