@@ -1,7 +1,8 @@
 GO ?= $(shell command -v go 2> /dev/null)
 NPM ?= $(shell command -v npm 2> /dev/null)
 CURL ?= $(shell command -v curl 2> /dev/null)
-MM_DEBUG ?=
+# AM_DEBUG enables debug builds (MM_DEBUG is still accepted).
+AM_DEBUG ?= $(MM_DEBUG)
 GOPATH ?= $(shell go env GOPATH)
 GO_TEST_FLAGS ?= -race
 GO_BUILD_FLAGS ?=
@@ -33,7 +34,7 @@ ifneq ($(wildcard build/custom.mk),)
 	include build/custom.mk
 endif
 
-ifneq ($(MM_DEBUG),)
+ifneq ($(AM_DEBUG),)
 	GO_BUILD_GCFLAGS = -gcflags "all=-N -l"
 	GO_BUILD_LDFLAGS =
 else
@@ -208,8 +209,8 @@ endif
 .PHONY: server
 server:
 ifneq ($(HAS_SERVER),)
-ifneq ($(MM_DEBUG),)
-	$(info DEBUG mode is on; to disable, unset MM_DEBUG)
+ifneq ($(AM_DEBUG),)
+	$(info DEBUG mode is on; to disable, unset AM_DEBUG)
 endif
 	mkdir -p server/dist;
 ifneq ($(MM_SERVICESETTINGS_ENABLEDEVELOPER),)
@@ -235,7 +236,7 @@ endif
 .PHONY: webapp
 webapp: webapp/node_modules
 ifneq ($(HAS_WEBAPP),)
-ifeq ($(MM_DEBUG),)
+ifeq ($(AM_DEBUG),)
 	cd webapp && $(NPM) run build;
 else
 	cd webapp && $(NPM) run debug;
@@ -284,7 +285,7 @@ deploy: dist
 ## Builds and installs the plugin to a server, updating the webapp automatically when changed.
 .PHONY: watch
 watch: apply server bundle
-ifeq ($(MM_DEBUG),)
+ifeq ($(AM_DEBUG),)
 	cd webapp && $(NPM) run build:watch
 else
 	cd webapp && $(NPM) run debug:watch

@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"strings"
 
@@ -15,6 +16,19 @@ import (
 )
 
 const NotAvailable = "n/a"
+
+// GetEnv returns the value of the environment variable name, which is expected to use the
+// AM_ prefix. When it is unset or empty, the legacy MM_-prefixed variable of the same name is
+// used as a fallback so existing deployments keep working.
+func GetEnv(name string) string {
+	if value := os.Getenv(name); value != "" {
+		return value
+	}
+	if legacy, ok := strings.CutPrefix(name, "AM_"); ok {
+		return os.Getenv("MM_" + legacy)
+	}
+	return ""
+}
 
 type ReactSelectOption struct {
 	Label string `json:"label"`

@@ -17,6 +17,8 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/mattermost/mattermost/server/public/model"
+
+	"github.com/antimatterchat/antimatter-plugin-jira/server/utils"
 )
 
 var errWebhookeventUnsupported = errors.New("Unsupported webhook event")
@@ -28,7 +30,7 @@ func ParseWebhook(bb []byte) (wh Webhook, err error) {
 		if err == nil || err == ErrWebhookIgnored {
 			return
 		}
-		if os.Getenv("MM_PLUGIN_JIRA_DEBUG_WEBHOOKS") == "" {
+		if utils.GetEnv("AM_PLUGIN_JIRA_DEBUG_WEBHOOKS") == "" {
 			return
 		}
 		f, _ := os.CreateTemp(os.TempDir(),

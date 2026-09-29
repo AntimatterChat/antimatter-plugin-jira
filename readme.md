@@ -68,8 +68,8 @@ make dist
 
 # optionally let the Makefile upload straight to your dev server
 export MM_SERVICESETTINGS_SITEURL=http://host.docker.internal:8065
-export MM_ADMIN_USERNAME=admin
-export MM_ADMIN_PASSWORD=admin
+export AM_ADMIN_USERNAME=admin
+export AM_ADMIN_PASSWORD=admin
 make deploy
 ```
 
