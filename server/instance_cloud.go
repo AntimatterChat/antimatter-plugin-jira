@@ -88,7 +88,7 @@ func (p *Plugin) installInactiveCloudInstance(rawURL string, actingUserID string
 	return jiraURL, setupRoutingSecret, nil
 }
 
-func (ci *cloudInstance) GetMattermostKey() string {
+func (ci *cloudInstance) GetAntimatterKey() string {
 	return ci.AtlassianSecurityContext.Key
 }
 
@@ -107,7 +107,7 @@ func (ci *cloudInstance) GetDisplayDetails() map[string]string {
 	}
 }
 
-func (ci *cloudInstance) GetUserConnectURL(mattermostUserID string) (string, *http.Cookie, error) {
+func (ci *cloudInstance) GetUserConnectURL(antimatterUserID string) (string, *http.Cookie, error) {
 	// Create JWT secret we use in Jira's connect URL params
 	randomBytes1 := make([]byte, 32)
 	_, err := rand.Read(randomBytes1)
@@ -131,18 +131,18 @@ func (ci *cloudInstance) GetUserConnectURL(mattermostUserID string) (string, *ht
 
 	// Store JWT and cookie secret together in KV store
 	storedSecret := jwtSecret + "-" + cookieSecret
-	err = ci.Plugin.otsStore.StoreOneTimeSecret(mattermostUserID, storedSecret)
+	err = ci.Plugin.otsStore.StoreOneTimeSecret(antimatterUserID, storedSecret)
 	if err != nil {
 		return "", nil, err
 	}
 
-	token, err := ci.Plugin.NewEncodedAuthToken(mattermostUserID, jwtSecret)
+	token, err := ci.Plugin.NewEncodedAuthToken(antimatterUserID, jwtSecret)
 	if err != nil {
 		return "", nil, err
 	}
 
 	v := url.Values{}
-	v.Add(argMMToken, token)
+	v.Add(argAMToken, token)
 	connectURL := fmt.Sprintf("%s/login?dest-url=%s/plugins/servlet/ac/%s/%s?%v",
 		ci.GetURL(), ci.GetURL(), ci.AtlassianSecurityContext.Key, userRedirectPageKey, v.Encode())
 

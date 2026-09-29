@@ -269,7 +269,7 @@ func (p *Plugin) httpTransitionIssuePostAction(w http.ResponseWriter, r *http.Re
 	}
 
 	_, err = p.TransitionIssue(&InTransitionIssue{
-		mattermostUserID: types.ID(ctx.authenticatedUserID),
+		antimatterUserID: types.ID(ctx.authenticatedUserID),
 		InstanceID:       types.ID(ctx.instanceID),
 		IssueKey:         ctx.issueKey,
 		ToState:          toState,
@@ -284,13 +284,13 @@ func (p *Plugin) httpTransitionIssuePostAction(w http.ResponseWriter, r *http.Re
 	})
 }
 
-func (p *Plugin) respondErrWithFeedback(mattermostUserID string, post *model.Post, w http.ResponseWriter, status int) (int, error) {
-	p.client.Post.SendEphemeralPost(mattermostUserID, post)
+func (p *Plugin) respondErrWithFeedback(antimatterUserID string, post *model.Post, w http.ResponseWriter, status int) (int, error) {
+	p.client.Post.SendEphemeralPost(antimatterUserID, post)
 	return respondErr(w, status, errors.New(post.Message))
 }
 
 type InCreateIssue struct {
-	mattermostUserID         types.ID
+	antimatterUserID         types.ID
 	InstanceID               types.ID         `json:"instance_id"`
 	RequiredFieldsNotCovered [][]string       `json:"required_fields_not_covered"`
 	PostID                   string           `json:"post_id"`
@@ -307,7 +307,7 @@ func (p *Plugin) httpCreateIssue(w http.ResponseWriter, r *http.Request) (int, e
 			errors.WithMessage(err, "failed to decode incoming request"))
 	}
 
-	in.mattermostUserID = types.ID(r.Header.Get("Mattermost-User-Id"))
+	in.antimatterUserID = types.ID(r.Header.Get("Mattermost-User-Id"))
 	created, statusCode, err := p.CreateIssue(&in)
 	if err != nil {
 		return respondErr(w, statusCode, err)
@@ -317,7 +317,7 @@ func (p *Plugin) httpCreateIssue(w http.ResponseWriter, r *http.Request) (int, e
 }
 
 func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
-	client, instance, connection, err := p.getClient(in.InstanceID, in.mattermostUserID)
+	client, instance, connection, err := p.getClient(in.InstanceID, in.antimatterUserID)
 	if err != nil {
 		return nil, http.StatusInternalServerError, errors.WithMessage(err, "failed to get client")
 	}
@@ -363,7 +363,7 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 		return nil, http.StatusBadRequest, errors.New("either post_id or channel_id must be provided")
 	}
 
-	if _, err = p.client.Channel.GetMember(channelID, in.mattermostUserID.String()); err != nil {
+	if _, err = p.client.Channel.GetMember(channelID, in.antimatterUserID.String()); err != nil {
 		return nil, http.StatusForbidden, errors.New("User does not have access to this channel")
 	}
 
@@ -406,7 +406,7 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 			RootId:    rootID,
 			UserId:    instance.Common().getConfig().botUserID,
 		}
-		p.client.Post.SendEphemeralPost(in.mattermostUserID.String(), reply)
+		p.client.Post.SendEphemeralPost(in.antimatterUserID.String(), reply)
 		return nil, http.StatusForbidden, errors.Errorf("issue can not be created via API: %s", message)
 	}
 
@@ -422,7 +422,7 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 				MakeCreateIssueURL(instance, project, issue),
 				err)
 
-			p.client.Post.SendEphemeralPost(in.mattermostUserID.String(), &model.Post{
+			p.client.Post.SendEphemeralPost(in.antimatterUserID.String(), &model.Post{
 				Message:   message,
 				ChannelId: channelID,
 				RootId:    rootID,
@@ -450,7 +450,7 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 	}
 
 	reply.AddProp("attachments", attachment)
-	p.client.Post.SendEphemeralPost(in.mattermostUserID.String(), reply)
+	p.client.Post.SendEphemeralPost(in.antimatterUserID.String(), reply)
 
 	// Fetching issue details as Jira only returns the issue id and issue key at the time of
 	// issue creation. We will not have issue summary in the creation response.
@@ -458,7 +458,7 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 	if err != nil {
 		return nil, http.StatusInternalServerError, errors.WithMessage(err, "failed to fetch issue details "+created.Key)
 	}
-	p.UpdateUserDefaults(in.mattermostUserID, in.InstanceID, &SavedFieldValues{
+	p.UpdateUserDefaults(in.antimatterUserID, in.InstanceID, &SavedFieldValues{
 		ProjectKey: project.Key,
 		IssueType:  issue.Fields.Type.ID,
 	})
@@ -468,7 +468,7 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 		Message:   fmt.Sprintf("Created a Jira issue: %s", mdKeySummaryLink(createdIssue, instance)),
 		ChannelId: channelID,
 		RootId:    rootID,
-		UserId:    in.mattermostUserID.String(),
+		UserId:    in.antimatterUserID.String(),
 	}
 	err = p.client.Post.CreatePost(publicReply)
 	if err != nil {
@@ -479,9 +479,9 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 		go func() {
 			conf := instance.Common().getConfig()
 			for _, fileID := range post.FileIds {
-				mattermostName, _, _, err := client.AddAttachment(*p.client, created.ID, fileID, conf.maxAttachmentSize)
+				antimatterName, _, _, err := client.AddAttachment(*p.client, created.ID, fileID, conf.maxAttachmentSize)
 				if err != nil {
-					notifyOnFailedAttachment(instance, in.mattermostUserID.String(), created.Key, err, "file: %s", mattermostName)
+					notifyOnFailedAttachment(instance, in.antimatterUserID.String(), created.Key, err, "file: %s", antimatterName)
 				}
 			}
 		}()
@@ -513,7 +513,7 @@ func preProcessTeamFields(fields *jira.IssueFields, teamFieldKeys map[string]str
 }
 
 func (p *Plugin) httpGetCreateIssueMetadataForProjects(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	projectKeys := r.FormValue("project-keys")
 	if projectKeys == "" {
 		return respondErr(w, http.StatusBadRequest,
@@ -522,7 +522,7 @@ func (p *Plugin) httpGetCreateIssueMetadataForProjects(w http.ResponseWriter, r 
 
 	instanceID := r.FormValue("instance_id")
 
-	cimd, err := p.GetCreateIssueMetadataForProjects(types.ID(instanceID), types.ID(mattermostUserID), projectKeys)
+	cimd, err := p.GetCreateIssueMetadataForProjects(types.ID(instanceID), types.ID(antimatterUserID), projectKeys)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -536,8 +536,8 @@ func (p *Plugin) httpGetCreateIssueMetadataForProjects(w http.ResponseWriter, r 
 	return respondJSON(w, cimd)
 }
 
-func (p *Plugin) GetCreateIssueMetadataForProjects(instanceID, mattermostUserID types.ID, projectKeys string) (*CreateMetaInfo, error) {
-	client, _, _, err := p.getClient(instanceID, mattermostUserID)
+func (p *Plugin) GetCreateIssueMetadataForProjects(instanceID, antimatterUserID types.ID, projectKeys string) (*CreateMetaInfo, error) {
+	client, _, _, err := p.getClient(instanceID, antimatterUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -630,8 +630,8 @@ func (p *Plugin) httpGetTeamFields(w http.ResponseWriter, r *http.Request) (int,
 		return http.StatusMethodNotAllowed, fmt.Errorf("request: %s is not allowed, must be GET", r.Method)
 	}
 
-	mattermostUserID := r.Header.Get(headerMattermostUserID)
-	if mattermostUserID == "" {
+	antimatterUserID := r.Header.Get(headerMattermostUserID)
+	if antimatterUserID == "" {
 		return http.StatusUnauthorized, errors.New("not authorized")
 	}
 
@@ -639,7 +639,7 @@ func (p *Plugin) httpGetTeamFields(w http.ResponseWriter, r *http.Request) (int,
 	fieldValue := r.FormValue(fieldValueQueryParam)
 
 	if instanceID != "" {
-		client, _, _, err := p.getClient(types.ID(instanceID), types.ID(mattermostUserID))
+		client, _, _, err := p.getClient(types.ID(instanceID), types.ID(antimatterUserID))
 		if err == nil {
 			p.discoverTeamFieldKeys(types.ID(instanceID), client)
 
@@ -723,8 +723,8 @@ func (p *Plugin) httpGetSprints(w http.ResponseWriter, r *http.Request) (int, er
 		return respondErr(w, http.StatusMethodNotAllowed, fmt.Errorf("request: %s is not allowed, must be GET", r.Method))
 	}
 
-	mattermostUserID := r.Header.Get(headerMattermostUserID)
-	if mattermostUserID == "" {
+	antimatterUserID := r.Header.Get(headerMattermostUserID)
+	if antimatterUserID == "" {
 		return respondErr(w, http.StatusUnauthorized, errors.New("not authorized"))
 	}
 
@@ -737,7 +737,7 @@ func (p *Plugin) httpGetSprints(w http.ResponseWriter, r *http.Request) (int, er
 		return respondErr(w, http.StatusBadRequest, errors.New("project_key is required"))
 	}
 
-	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(mattermostUserID))
+	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(antimatterUserID))
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -808,8 +808,8 @@ func (p *Plugin) httpGetSprintByID(w http.ResponseWriter, r *http.Request) (int,
 		return respondErr(w, http.StatusMethodNotAllowed, fmt.Errorf("request: %s is not allowed, must be GET", r.Method))
 	}
 
-	mattermostUserID := r.Header.Get(headerMattermostUserID)
-	if mattermostUserID == "" {
+	antimatterUserID := r.Header.Get(headerMattermostUserID)
+	if antimatterUserID == "" {
 		return respondErr(w, http.StatusUnauthorized, errors.New("not authorized"))
 	}
 
@@ -825,7 +825,7 @@ func (p *Plugin) httpGetSprintByID(w http.ResponseWriter, r *http.Request) (int,
 		return respondErr(w, http.StatusBadRequest, errors.New("sprint_id must be numeric"))
 	}
 
-	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(mattermostUserID))
+	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(antimatterUserID))
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -852,13 +852,13 @@ func (p *Plugin) httpGetCommentVisibilityFields(w http.ResponseWriter, r *http.R
 		return http.StatusMethodNotAllowed, fmt.Errorf("Request: %s is not allowed, must be GET", r.Method)
 	}
 
-	mattermostUserID := r.Header.Get(headerMattermostUserID)
-	if mattermostUserID == "" {
+	antimatterUserID := r.Header.Get(headerMattermostUserID)
+	if antimatterUserID == "" {
 		return http.StatusUnauthorized, errors.New("not authorized")
 	}
 
 	instanceID := r.FormValue(instanceIDQueryParam)
-	client, instance, connection, err := p.getClient(types.ID(instanceID), types.ID(mattermostUserID))
+	client, instance, connection, err := p.getClient(types.ID(instanceID), types.ID(antimatterUserID))
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -903,22 +903,22 @@ func (p *Plugin) httpGetCommentVisibilityFields(w http.ResponseWriter, r *http.R
 }
 
 func (p *Plugin) httpGetSearchIssues(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	instanceID := r.FormValue("instance_id")
 	q := r.FormValue("q")
 	jqlString := r.FormValue("jql")
 	fieldsStr := r.FormValue("fields")
 	limitStr := r.FormValue("limit")
 
-	result, err := p.GetSearchIssues(types.ID(instanceID), types.ID(mattermostUserID), q, jqlString, fieldsStr, limitStr)
+	result, err := p.GetSearchIssues(types.ID(instanceID), types.ID(antimatterUserID), q, jqlString, fieldsStr, limitStr)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
 	return respondJSON(w, result)
 }
 
-func (p *Plugin) GetSearchIssues(instanceID, mattermostUserID types.ID, q, jqlString, fieldsStr, limitStr string) ([]jira.Issue, error) {
-	client, _, _, err := p.getClient(instanceID, mattermostUserID)
+func (p *Plugin) GetSearchIssues(instanceID, antimatterUserID types.ID, q, jqlString, fieldsStr, limitStr string) ([]jira.Issue, error) {
+	client, _, _, err := p.getClient(instanceID, antimatterUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -986,10 +986,10 @@ type OutProjectMetadata struct {
 }
 
 func (p *Plugin) httpGetJiraProjectMetadata(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	instanceID := r.FormValue("instance_id")
 
-	plist, connection, err := p.ListJiraProjects(types.ID(instanceID), types.ID(mattermostUserID), true)
+	plist, connection, err := p.ListJiraProjects(types.ID(instanceID), types.ID(antimatterUserID), true)
 	if err != nil {
 		// Getting the issue Types separately only when the status code returned is 400
 		if !strings.Contains(err.Error(), "400") {
@@ -997,7 +997,7 @@ func (p *Plugin) httpGetJiraProjectMetadata(w http.ResponseWriter, r *http.Reque
 				errors.WithMessage(err, "failed to GetProjectMetadata"))
 		}
 
-		plist, connection, err = p.ListJiraProjects(types.ID(instanceID), types.ID(mattermostUserID), false)
+		plist, connection, err = p.ListJiraProjects(types.ID(instanceID), types.ID(antimatterUserID), false)
 		if err != nil {
 			return respondErr(w, http.StatusInternalServerError,
 				errors.WithMessage(err, "failed to get the list of Jira Projects"))
@@ -1005,7 +1005,7 @@ func (p *Plugin) httpGetJiraProjectMetadata(w http.ResponseWriter, r *http.Reque
 
 		var projectList jira.ProjectList
 		for _, prj := range plist {
-			issueTypeList, iErr := p.GetIssueTypes(types.ID(instanceID), types.ID(mattermostUserID), prj.ID)
+			issueTypeList, iErr := p.GetIssueTypes(types.ID(instanceID), types.ID(antimatterUserID), prj.ID)
 			if iErr != nil {
 				p.client.Log.Debug("Failed to get issue types for project.", "ProjectKey", prj.Key, "Error", iErr.Error())
 				continue
@@ -1053,8 +1053,8 @@ func (p *Plugin) httpGetJiraProjectMetadata(w http.ResponseWriter, r *http.Reque
 	})
 }
 
-func (p *Plugin) ListJiraProjects(instanceID, mattermostUserID types.ID, expandIssueTypes bool) (jira.ProjectList, *Connection, error) {
-	client, _, connection, err := p.getClient(instanceID, mattermostUserID)
+func (p *Plugin) ListJiraProjects(instanceID, antimatterUserID types.ID, expandIssueTypes bool) (jira.ProjectList, *Connection, error) {
+	client, _, connection, err := p.getClient(instanceID, antimatterUserID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1065,8 +1065,8 @@ func (p *Plugin) ListJiraProjects(instanceID, mattermostUserID types.ID, expandI
 	return plist, connection, nil
 }
 
-func (p *Plugin) GetIssueTypes(instanceID, mattermostUserID types.ID, projectID string) ([]jira.IssueType, error) {
-	client, _, _, err := p.getClient(instanceID, mattermostUserID)
+func (p *Plugin) GetIssueTypes(instanceID, antimatterUserID types.ID, projectID string) ([]jira.IssueType, error) {
+	client, _, _, err := p.getClient(instanceID, antimatterUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -1089,7 +1089,7 @@ func (p *Plugin) httpAttachCommentToIssue(w http.ResponseWriter, r *http.Request
 			errors.WithMessage(err, "failed to decode incoming request"))
 	}
 
-	in.mattermostUserID = types.ID(r.Header.Get("Mattermost-User-Id"))
+	in.antimatterUserID = types.ID(r.Header.Get("Mattermost-User-Id"))
 	added, statusCode, err := p.AttachCommentToIssue(&in)
 	if err != nil {
 		return respondErr(w, statusCode, errors.WithMessage(err, "failed to attach comment to issue"))
@@ -1099,7 +1099,7 @@ func (p *Plugin) httpAttachCommentToIssue(w http.ResponseWriter, r *http.Request
 }
 
 type InAttachCommentToIssue struct {
-	mattermostUserID types.ID
+	antimatterUserID types.ID
 	InstanceID       types.ID `json:"instance_id"`
 	PostID           string   `json:"post_id"`
 	CurrentTeam      string   `json:"current_team"`
@@ -1107,7 +1107,7 @@ type InAttachCommentToIssue struct {
 }
 
 func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment, int, error) {
-	client, instance, connection, err := p.getClient(in.InstanceID, in.mattermostUserID)
+	client, instance, connection, err := p.getClient(in.InstanceID, in.antimatterUserID)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
 	}
@@ -1121,7 +1121,7 @@ func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment
 		return nil, http.StatusNotFound, errors.New("failed to load post " + in.PostID + ": not found")
 	}
 
-	_, err = p.client.Channel.GetMember(post.ChannelId, in.mattermostUserID.String())
+	_, err = p.client.Channel.GetMember(post.ChannelId, in.antimatterUserID.String())
 	if err != nil {
 		return nil, http.StatusForbidden, errors.New("User does not have access to this post")
 	}
@@ -1153,9 +1153,9 @@ func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment
 		conf := instance.Common().getConfig()
 		extraText := ""
 		for _, fileID := range post.FileIds {
-			mattermostName, jiraName, mime, e := client.AddAttachment(*p.client, in.IssueKey, fileID, conf.maxAttachmentSize)
+			antimatterName, jiraName, mime, e := client.AddAttachment(*p.client, in.IssueKey, fileID, conf.maxAttachmentSize)
 			if e != nil {
-				notifyOnFailedAttachment(instance, in.mattermostUserID.String(), in.IssueKey, e, "file: %s", mattermostName)
+				notifyOnFailedAttachment(instance, in.antimatterUserID.String(), in.IssueKey, e, "file: %s", antimatterName)
 				continue
 			}
 			if isImageMIME(mime) || isEmbbedableMIME(mime) {
@@ -1172,7 +1172,7 @@ func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment
 		jiraComment.Body += extraText
 		_, err = client.UpdateComment(in.IssueKey, &jiraComment)
 		if err != nil {
-			notifyOnFailedAttachment(instance, in.mattermostUserID.String(), in.IssueKey, err, "failed to completely update comment with attachments")
+			notifyOnFailedAttachment(instance, in.antimatterUserID.String(), in.IssueKey, err, "failed to completely update comment with attachments")
 		}
 	}()
 
@@ -1182,7 +1182,7 @@ func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment
 		rootID = post.RootId
 	}
 
-	p.UpdateUserDefaults(in.mattermostUserID, in.InstanceID, nil)
+	p.UpdateUserDefaults(in.antimatterUserID, in.InstanceID, nil)
 
 	msg := fmt.Sprintf("Message attached to [%s](%s/browse/%s)", in.IssueKey, instance.GetJiraBaseURL(), in.IssueKey)
 
@@ -1191,7 +1191,7 @@ func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment
 		Message:   msg,
 		ChannelId: post.ChannelId,
 		RootId:    rootID,
-		UserId:    in.mattermostUserID.String(),
+		UserId:    in.antimatterUserID.String(),
 	}
 	err = p.client.Post.CreatePost(reply)
 	if err != nil {
@@ -1201,7 +1201,7 @@ func (p *Plugin) AttachCommentToIssue(in *InAttachCommentToIssue) (*jira.Comment
 	return added, http.StatusOK, nil
 }
 
-func notifyOnFailedAttachment(instance Instance, mattermostUserID, issueKey string, err error, format string, args ...interface{}) {
+func notifyOnFailedAttachment(instance Instance, antimatterUserID, issueKey string, err error, format string, args ...interface{}) {
 	msg := "Failed to attach to issue: " + issueKey + ", " + fmt.Sprintf(format, args...)
 
 	instance.Common().Plugin.client.Log.Error(fmt.Sprintf("%s: %v", msg, err), "issue", issueKey)
@@ -1209,7 +1209,7 @@ func notifyOnFailedAttachment(instance Instance, mattermostUserID, issueKey stri
 	if len(errMsg) > 2048 {
 		errMsg = errMsg[:2048]
 	}
-	_, _ = instance.Common().Plugin.CreateBotDMtoMMUserID(mattermostUserID,
+	_, _ = instance.Common().Plugin.CreateBotDMtoMMUserID(antimatterUserID,
 		"%s. Please notify your system administrator.\n%s", msg, errMsg)
 }
 
@@ -1376,8 +1376,8 @@ func (p *Plugin) getIssueAsSlackAttachment(instance Instance, connection *Connec
 	return asSlackAttachment(instance, client, issue, showActions)
 }
 
-func (p *Plugin) UnassignIssue(instance Instance, mattermostUserID types.ID, issueKey string) (string, error) {
-	connection, err := p.userStore.LoadConnection(instance.GetID(), mattermostUserID)
+func (p *Plugin) UnassignIssue(instance Instance, antimatterUserID types.ID, issueKey string) (string, error) {
+	connection, err := p.userStore.LoadConnection(instance.GetID(), antimatterUserID)
 	if err != nil {
 		return "", err
 	}
@@ -1407,8 +1407,8 @@ func (p *Plugin) UnassignIssue(instance Instance, mattermostUserID types.ID, iss
 
 const MinUserSearchQueryLength = 3
 
-func (p *Plugin) AssignIssue(instance Instance, mattermostUserID types.ID, issueKey, userSearch string, assignee *jira.User) (string, error) {
-	connection, err := p.userStore.LoadConnection(instance.GetID(), mattermostUserID)
+func (p *Plugin) AssignIssue(instance Instance, antimatterUserID types.ID, issueKey, userSearch string, assignee *jira.User) (string, error) {
+	connection, err := p.userStore.LoadConnection(instance.GetID(), antimatterUserID)
 	if err != nil {
 		return "", err
 	}
@@ -1490,7 +1490,7 @@ func (p *Plugin) AssignIssue(instance Instance, mattermostUserID types.ID, issue
 }
 
 type InTransitionIssue struct {
-	mattermostUserID types.ID
+	antimatterUserID types.ID
 	InstanceID       types.ID `json:"instance_id"`
 	PostToChannelID  string   `json:"channel_id"`
 	IssueKey         string   `json:"issue_key"`
@@ -1498,7 +1498,7 @@ type InTransitionIssue struct {
 }
 
 func (p *Plugin) TransitionIssue(in *InTransitionIssue) (string, error) {
-	client, instance, _, err := p.getClient(in.InstanceID, in.mattermostUserID)
+	client, instance, _, err := p.getClient(in.InstanceID, in.antimatterUserID)
 	if err != nil {
 		return "", err
 	}
@@ -1567,17 +1567,17 @@ func (p *Plugin) TransitionIssue(in *InTransitionIssue) (string, error) {
 
 	post := makePost(p.getUserID(), in.PostToChannelID, msg)
 	post.AddProp("attachments", attachments)
-	p.client.Post.SendEphemeralPost(in.mattermostUserID.String(), post)
+	p.client.Post.SendEphemeralPost(in.antimatterUserID.String(), post)
 
 	return msg, nil
 }
 
-func (p *Plugin) getClient(instanceID, mattermostUserID types.ID) (Client, Instance, *Connection, error) {
+func (p *Plugin) getClient(instanceID, antimatterUserID types.ID) (Client, Instance, *Connection, error) {
 	instance, err := p.instanceStore.LoadInstance(instanceID)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	connection, err := p.userStore.LoadConnection(instance.GetID(), mattermostUserID)
+	connection, err := p.userStore.LoadConnection(instance.GetID(), antimatterUserID)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -1593,14 +1593,14 @@ func (p *Plugin) httpGetIssueByKey(w http.ResponseWriter, r *http.Request) (int,
 		return respondErr(w, http.StatusMethodNotAllowed, fmt.Errorf("request: %s is not allowed, must be GET", r.Method))
 	}
 
-	mattermostUserID := r.Header.Get(HeaderMattermostUserID)
-	if mattermostUserID == "" {
+	antimatterUserID := r.Header.Get(HeaderMattermostUserID)
+	if antimatterUserID == "" {
 		return respondErr(w, http.StatusUnauthorized, errors.New("not authorized"))
 	}
 
 	instanceID := r.FormValue(ParamInstanceID)
 	issueKey := r.FormValue(ParamIssueKey)
-	issue, err := p.GetIssueByKey(types.ID(instanceID), types.ID(mattermostUserID), issueKey)
+	issue, err := p.GetIssueByKey(types.ID(instanceID), types.ID(antimatterUserID), issueKey)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -1608,8 +1608,8 @@ func (p *Plugin) httpGetIssueByKey(w http.ResponseWriter, r *http.Request) (int,
 	return respondJSON(w, issue)
 }
 
-func (p *Plugin) GetIssueByKey(instanceID, mattermostUserID types.ID, issueKey string) (*jira.Issue, error) {
-	client, _, _, err := p.getClient(instanceID, mattermostUserID)
+func (p *Plugin) GetIssueByKey(instanceID, antimatterUserID types.ID, issueKey string) (*jira.Issue, error) {
+	client, _, _, err := p.getClient(instanceID, antimatterUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -1863,18 +1863,18 @@ func (p *Plugin) GetUserSetting(wh *webhook, instanceID types.ID, jiraAccountID,
 		return nil, err
 	}
 
-	var mattermostUserID types.ID
+	var antimatterUserID types.ID
 	jiraUserID := jiraAccountID
 	if jiraUserID == "" {
 		jiraUserID = jiraUsername
 	}
 
-	mattermostUserID, err = p.userStore.LoadMattermostUserID(instance.GetID(), jiraUserID)
+	antimatterUserID, err = p.userStore.LoadAntimatterUserID(instance.GetID(), jiraUserID)
 	if err != nil {
 		return nil, err
 	}
 
-	connection, err := p.userStore.LoadConnection(instanceID, mattermostUserID)
+	connection, err := p.userStore.LoadConnection(instanceID, antimatterUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -1896,12 +1896,12 @@ func (p *Plugin) fetchConnectedUserFromAccount(account map[string]string, instan
 	if account[jiraUserAccountID] != "" {
 		accountKey = account[jiraUserAccountID]
 	}
-	mattermostUserID, err := p.userStore.LoadMattermostUserID(instance.GetID(), accountKey)
+	antimatterUserID, err := p.userStore.LoadAntimatterUserID(instance.GetID(), accountKey)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	connection, err := p.userStore.LoadConnection(instance.GetID(), mattermostUserID)
+	connection, err := p.userStore.LoadConnection(instance.GetID(), antimatterUserID)
 	if err != nil {
 		return nil, nil, err
 	}

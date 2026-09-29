@@ -287,8 +287,8 @@ func (p *Plugin) ResolveWebhookInstanceURL(instanceURL string) (types.ID, error)
 	return instanceID, nil
 }
 
-func (p *Plugin) LoadUserInstance(mattermostUserID types.ID, instanceURL string) (*User, Instance, error) {
-	user, instanceID, err := p.ResolveUserInstanceURL(mattermostUserID, instanceURL)
+func (p *Plugin) LoadUserInstance(antimatterUserID types.ID, instanceURL string) (*User, Instance, error) {
+	user, instanceID, err := p.ResolveUserInstanceURL(antimatterUserID, instanceURL)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -300,8 +300,8 @@ func (p *Plugin) LoadUserInstance(mattermostUserID types.ID, instanceURL string)
 	return user, instance, nil
 }
 
-func (p *Plugin) ResolveUserInstanceURL(mattermostUserID types.ID, instanceURL string) (*User, types.ID, error) {
-	user, err := p.userStore.LoadUser(mattermostUserID)
+func (p *Plugin) ResolveUserInstanceURL(antimatterUserID types.ID, instanceURL string) (*User, types.ID, error) {
+	user, err := p.userStore.LoadUser(antimatterUserID)
 	if err != nil {
 		return nil, "", err
 	}
@@ -347,8 +347,8 @@ func (p *Plugin) resolveUserInstanceURL(user *User, instanceURL string) (types.I
 }
 
 func (p *Plugin) httpAutocompleteConnect(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
-	info, err := p.GetUserInfo(mattermostUserID, nil)
+	antimatterUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
+	info, err := p.GetUserInfo(antimatterUserID, nil)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -363,8 +363,8 @@ func (p *Plugin) httpAutocompleteConnect(w http.ResponseWriter, r *http.Request)
 }
 
 func (p *Plugin) httpAutocompleteUserInstance(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
-	info, err := p.GetUserInfo(mattermostUserID, nil)
+	antimatterUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
+	info, err := p.GetUserInfo(antimatterUserID, nil)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -400,8 +400,8 @@ func (p *Plugin) httpAutocompleteUserInstance(w http.ResponseWriter, r *http.Req
 }
 
 func (p *Plugin) httpAutocompleteInstalledInstanceWithAlias(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
-	info, err := p.GetUserInfo(mattermostUserID, nil)
+	antimatterUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
+	info, err := p.GetUserInfo(antimatterUserID, nil)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -431,8 +431,8 @@ func (p *Plugin) httpAutocompleteInstalledInstanceWithAlias(w http.ResponseWrite
 	return respondJSON(w, out)
 }
 func (p *Plugin) httpAutocompleteInstalledInstance(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
-	info, err := p.GetUserInfo(mattermostUserID, nil)
+	antimatterUserID := types.ID(r.Header.Get("Mattermost-User-Id"))
+	info, err := p.GetUserInfo(antimatterUserID, nil)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}

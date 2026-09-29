@@ -47,7 +47,7 @@ const (
 	keyJiraURL             = "JiraURL"
 	keyInstance            = "Instance"
 	keyManageWebhooksURL   = "ManageWebhooksURL"
-	keyMattermostKey       = "MattermostKey"
+	keyAntimatterKey       = "MattermostKey"
 	keyPluginURL           = "PluginURL"
 	keyPublicKey           = "PublicKey"
 	keyWebhookURL          = "WebhookURL"
@@ -696,7 +696,7 @@ func (p *Plugin) submitCreateServerInstance(f *flow.Flow, submission map[string]
 		keyEdition:           string(ServerInstanceType),
 		keyJiraURL:           jiraURL,
 		keyPluginURL:         p.GetPluginURL(),
-		keyMattermostKey:     si.GetMattermostKey(),
+		keyAntimatterKey:     si.GetAntimatterKey(),
 		keyPublicKey:         pkey,
 		keyConnectURL:        p.GetPluginURL() + "/" + instancePath(routeUserConnect, si.InstanceID),
 		keyWebhookURL:        p.getSubscriptionsWebhookURL(si.InstanceID),

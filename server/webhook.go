@@ -193,21 +193,21 @@ func (wh *webhook) PostNotifications(p *Plugin, instanceID types.ID) ([]*model.P
 	posts := []*model.Post{}
 	var mapForNotification = make(map[types.ID]int)
 	for _, notification := range wh.notifications {
-		var mattermostUserID types.ID
+		var antimatterUserID types.ID
 		var err error
 
 		// prefer accountId to username when looking up UserIds
 		if notification.jiraAccountID != "" {
-			mattermostUserID, err = p.userStore.LoadMattermostUserID(instance.GetID(), notification.jiraAccountID)
+			antimatterUserID, err = p.userStore.LoadAntimatterUserID(instance.GetID(), notification.jiraAccountID)
 		} else {
-			mattermostUserID, err = p.userStore.LoadMattermostUserID(instance.GetID(), notification.jiraUsername)
+			antimatterUserID, err = p.userStore.LoadAntimatterUserID(instance.GetID(), notification.jiraUsername)
 		}
 		if err != nil {
 			continue
 		}
 
 		// Check if the user has permissions.
-		c, err2 := p.userStore.LoadConnection(instance.GetID(), mattermostUserID)
+		c, err2 := p.userStore.LoadConnection(instance.GetID(), antimatterUserID)
 		if err2 != nil {
 			// Not connected to Jira, so can't check permissions
 			continue
@@ -224,10 +224,10 @@ func (wh *webhook) PostNotifications(p *Plugin, instanceID types.ID) ([]*model.P
 			continue
 		}
 
-		if _, ok := mapForNotification[mattermostUserID]; ok {
+		if _, ok := mapForNotification[antimatterUserID]; ok {
 			continue
 		}
-		mapForNotification[mattermostUserID] = 1
+		mapForNotification[antimatterUserID] = 1
 
 		isCommentEvent := wh.Events().Intersection(commentEvents).Len() > 0
 		if isCommentEvent {
@@ -249,7 +249,7 @@ func (wh *webhook) PostNotifications(p *Plugin, instanceID types.ID) ([]*model.P
 		// Atomically claim the dedup key before posting so concurrent webhook
 		// deliveries can't both pass the check and send duplicates. SetAtomic(nil)
 		// only writes when the key does not already exist.
-		dedupKey := notificationDedupKey(instance.GetID(), wh, mattermostUserID, notification.message)
+		dedupKey := notificationDedupKey(instance.GetID(), wh, antimatterUserID, notification.message)
 		claimed, kvErr := p.client.KV.Set(dedupKey, true, pluginapi.SetExpiry(webhookDedupTTL), pluginapi.SetAtomic(nil))
 		switch {
 		case kvErr != nil:
@@ -260,7 +260,7 @@ func (wh *webhook) PostNotifications(p *Plugin, instanceID types.ID) ([]*model.P
 			continue
 		}
 
-		post, err := p.CreateBotDMPost(instance.GetID(), mattermostUserID, notification.message, notification.postType)
+		post, err := p.CreateBotDMPost(instance.GetID(), antimatterUserID, notification.message, notification.postType)
 		if err != nil {
 			p.errorf("PostNotifications: failed to create notification post, err: %v", err)
 			if claimed {

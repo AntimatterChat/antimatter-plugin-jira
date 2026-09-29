@@ -71,12 +71,12 @@ type JiraStatus struct {
 
 // CheckJiraURL checks if `/status` endpoint of the Jira URL is accessible
 // and responding with the correct state which is "RUNNING"
-func CheckJiraURL(mattermostSiteURL, jiraURL string, requireHTTPS bool) (_ string, err error) {
+func CheckJiraURL(antimatterSiteURL, jiraURL string, requireHTTPS bool) (_ string, err error) {
 	jiraURL, err = NormalizeJiraURL(jiraURL)
 	if err != nil {
 		return "", err
 	}
-	if jiraURL == strings.TrimSuffix(mattermostSiteURL, "/") {
+	if jiraURL == strings.TrimSuffix(antimatterSiteURL, "/") {
 		return "", errors.Errorf("%s is the Mattermost site URL. Please use your Jira URL", jiraURL)
 	}
 

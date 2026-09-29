@@ -35,8 +35,8 @@ func (p *Plugin) httpOAuth2Complete(w http.ResponseWriter, r *http.Request, inst
 	}
 
 	stateSecret := stateArray[0]
-	mattermostUserID := stateArray[1]
-	storedSecret, err := p.otsStore.LoadOneTimeSecret(mattermostUserID)
+	antimatterUserID := stateArray[1]
+	storedSecret, err := p.otsStore.LoadOneTimeSecret(antimatterUserID)
 	if err != nil {
 		return respondErr(w, http.StatusUnauthorized, errors.New("state not found or might be expired"))
 	}
@@ -45,9 +45,9 @@ func (p *Plugin) httpOAuth2Complete(w http.ResponseWriter, r *http.Request, inst
 		return respondErr(w, http.StatusUnauthorized, errors.New("state token mismatch"))
 	}
 
-	mmUser, appErr := p.API.GetUser(mattermostUserID)
+	amUser, appErr := p.API.GetUser(antimatterUserID)
 	if appErr != nil {
-		return respondErr(w, http.StatusInternalServerError, errors.WithMessage(appErr, fmt.Sprintf("failed to load user %s", mattermostUserID)))
+		return respondErr(w, http.StatusInternalServerError, errors.WithMessage(appErr, fmt.Sprintf("failed to load user %s", antimatterUserID)))
 	}
 
 	instance, err := p.instanceStore.LoadInstance(instanceID)
@@ -55,7 +55,7 @@ func (p *Plugin) httpOAuth2Complete(w http.ResponseWriter, r *http.Request, inst
 		return respondErr(w, http.StatusInternalServerError, errors.Wrap(err, "Error occurred while loading instance"))
 	}
 
-	connection, err := p.GenerateInitialOAuthToken(mattermostUserID, code, instanceID)
+	connection, err := p.GenerateInitialOAuthToken(antimatterUserID, code, instanceID)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, errors.Wrap(err, "Error occurred while generating initial oauth token"))
 	}
@@ -73,24 +73,24 @@ func (p *Plugin) httpOAuth2Complete(w http.ResponseWriter, r *http.Request, inst
 
 	// Set default settings when the user connects for the first time
 	connection.Settings = &ConnectionSettings{Notifications: true}
-	connection.MattermostUserID = types.ID(mattermostUserID)
+	connection.AntimatterUserID = types.ID(antimatterUserID)
 
-	if err := p.connectUser(instance, types.ID(mattermostUserID), connection); err != nil {
-		return respondErr(w, http.StatusInternalServerError, errors.Wrap(err, fmt.Sprintf("Error occurred while connecting user. UserID: %s", mattermostUserID)))
+	if err := p.connectUser(instance, types.ID(antimatterUserID), connection); err != nil {
+		return respondErr(w, http.StatusInternalServerError, errors.Wrap(err, fmt.Sprintf("Error occurred while connecting user. UserID: %s", antimatterUserID)))
 	}
 
 	return p.respondTemplate(w, r, ContentTypeHTML, struct {
-		MattermostDisplayName string
+		AntimatterDisplayName string
 		JiraDisplayName       string
 		RevokeURL             string
 	}{
 		JiraDisplayName:       jiraUser.DisplayName + " (" + jiraUser.Name + ")",
-		MattermostDisplayName: mmUser.GetDisplayName(model.ShowNicknameFullName),
+		AntimatterDisplayName: amUser.GetDisplayName(model.ShowNicknameFullName),
 		RevokeURL:             path.Join(p.GetPluginURLPath(), instancePath(routeUserDisconnect, instance.GetID())),
 	})
 }
 
-func (p *Plugin) GenerateInitialOAuthToken(mattermostUserID, code string, instanceID types.ID) (*Connection, error) {
+func (p *Plugin) GenerateInitialOAuthToken(antimatterUserID, code string, instanceID types.ID) (*Connection, error) {
 	instance, err := p.instanceStore.LoadInstance(instanceID)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (p *Plugin) GenerateInitialOAuthToken(mattermostUserID, code string, instan
 		return nil, errors.WithMessage(err, "error while exchanging authorization code for access token")
 	}
 
-	connection, err := p.userStore.LoadConnection(instanceID, types.ID(mattermostUserID))
+	connection, err := p.userStore.LoadConnection(instanceID, types.ID(antimatterUserID))
 	if err != nil {
 		return nil, err
 	}

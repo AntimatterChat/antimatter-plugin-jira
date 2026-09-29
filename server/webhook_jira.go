@@ -67,7 +67,7 @@ func (jwh *JiraWebhook) expandIssue(p *Plugin, instanceID types.ID) error {
 				accountID = jwh.Issue.Fields.Creator.AccountID
 			}
 
-			mmUserID, err := p.userStore.LoadMattermostUserID(instanceID, accountID)
+			amUserID, err := p.userStore.LoadAntimatterUserID(instanceID, accountID)
 			if err != nil {
 				// User is not connected, so we try to fall back to JWT bot
 				if instance.JWTInstance == nil {
@@ -96,7 +96,7 @@ func (jwh *JiraWebhook) expandIssue(p *Plugin, instanceID types.ID) error {
 				return nil
 			}
 
-			conn, err := p.userStore.LoadConnection(instance.GetID(), mmUserID)
+			conn, err := p.userStore.LoadConnection(instance.GetID(), amUserID)
 			if err != nil {
 				return err
 			}

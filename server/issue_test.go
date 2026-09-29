@@ -301,7 +301,7 @@ func TestTransitionJiraIssue(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			actual, err := p.TransitionIssue(&InTransitionIssue{
 				InstanceID:       testInstance1.InstanceID,
-				mattermostUserID: "connected_user",
+				antimatterUserID: "connected_user",
 				IssueKey:         tt.issueKey,
 				ToState:          tt.toState,
 			})
@@ -1093,7 +1093,7 @@ func TestRouteAttachCommentToIssue(t *testing.T) {
 			p.userStore = getMockUserStoreKV()
 			p.client = pluginapi.NewClient(api, p.Driver)
 			p.updateConfig(func(conf *config) {
-				conf.mattermostSiteURL = "https://somelink.com"
+				conf.antimatterSiteURL = "https://somelink.com"
 			})
 
 			tt.request.InstanceID = testInstance1.InstanceID.String()
@@ -1256,7 +1256,7 @@ func TestCreateIssue(t *testing.T) {
 			p.SetAPI(api)
 			p.client = pluginapi.NewClient(api, p.Driver)
 			p.updateConfig(func(conf *config) {
-				conf.mattermostSiteURL = "https://somelink.com"
+				conf.antimatterSiteURL = "https://somelink.com"
 			})
 			p.userStore = getMockUserStoreKV()
 			p.instanceStore = p.getMockInstanceStoreKV(1)
@@ -1265,7 +1265,7 @@ func TestCreateIssue(t *testing.T) {
 				PostID:           tt.postID,
 				CurrentTeam:      "test_team",
 				ChannelID:        tt.channelID,
-				mattermostUserID: "connected_user",
+				antimatterUserID: "connected_user",
 				InstanceID:       testInstance1.InstanceID,
 				Fields: jira.IssueFields{
 					Project: jira.Project{
@@ -1445,7 +1445,7 @@ func TestRouteCreateIssue(t *testing.T) {
 			p.SetAPI(api)
 			p.client = pluginapi.NewClient(api, p.Driver)
 			p.updateConfig(func(conf *config) {
-				conf.mattermostSiteURL = "https://somelink.com"
+				conf.antimatterSiteURL = "https://somelink.com"
 			})
 			p.userStore = getMockUserStoreKV()
 			p.instanceStore = p.getMockInstanceStoreKV(1)

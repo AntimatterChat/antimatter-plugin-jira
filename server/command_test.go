@@ -34,7 +34,7 @@ const (
 	mockUserIDUnknown              = "3"
 	mockUserIDSysAdmin             = "4"
 	mockUserIDNonSysAdmin          = "5"
-	mattermostSiteURL              = "https://somelink.com"
+	antimatterSiteURL              = "https://somelink.com"
 )
 
 type mockUserStoreKV struct {
@@ -45,18 +45,18 @@ type mockUserStoreKV struct {
 
 var _ UserStore = (*mockUserStoreKV)(nil)
 
-func (store mockUserStoreKV) LoadConnection(instanceID, mattermostUserID types.ID) (*Connection, error) {
-	connection, ok := store.connections[mattermostUserID]
+func (store mockUserStoreKV) LoadConnection(instanceID, antimatterUserID types.ID) (*Connection, error) {
+	connection, ok := store.connections[antimatterUserID]
 	if !ok {
-		return nil, errors.Wrapf(kvstore.ErrNotFound, "TESTING connection %q %q", instanceID, mattermostUserID)
+		return nil, errors.Wrapf(kvstore.ErrNotFound, "TESTING connection %q %q", instanceID, antimatterUserID)
 	}
 	return connection, nil
 }
 
-func (store mockUserStoreKV) LoadUser(mattermostUserID types.ID) (*User, error) {
-	user, ok := store.users[mattermostUserID]
+func (store mockUserStoreKV) LoadUser(antimatterUserID types.ID) (*User, error) {
+	user, ok := store.users[antimatterUserID]
 	if !ok {
-		return nil, errors.Errorf("TESTING user %q not found", mattermostUserID)
+		return nil, errors.Errorf("TESTING user %q not found", antimatterUserID)
 	}
 	return user, nil
 }
@@ -165,7 +165,7 @@ func TestPlugin_ExecuteCommand_Settings(t *testing.T) {
 	tc := TestConfiguration{}
 	p.updateConfig(func(conf *config) {
 		conf.Secret = tc.Secret
-		conf.mattermostSiteURL = mattermostSiteURL
+		conf.antimatterSiteURL = antimatterSiteURL
 	})
 	api := &plugintest.API{}
 	api.On("LogError", mock.AnythingOfType("string")).Return(nil)
@@ -281,7 +281,7 @@ func TestPlugin_ExecuteCommand_Instance_Settings(t *testing.T) {
 	tc := TestConfiguration{}
 	p.updateConfig(func(conf *config) {
 		conf.Secret = tc.Secret
-		conf.mattermostSiteURL = mattermostSiteURL
+		conf.antimatterSiteURL = antimatterSiteURL
 	})
 	api := &plugintest.API{}
 	api.On("LogError", mock.AnythingOfType("string")).Return(nil)
@@ -512,7 +512,7 @@ func TestPlugin_ExecuteCommand_Installation(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			p := Plugin{}
 			p.updateConfig(func(conf *config) {
-				conf.mattermostSiteURL = mattermostSiteURL
+				conf.antimatterSiteURL = antimatterSiteURL
 				conf.rsaKey, _ = rsa.GenerateKey(rand.Reader, 1024) // #nosec G403
 			})
 			isSendEphemeralPostCalled := false
@@ -596,7 +596,7 @@ func TestPlugin_ExecuteCommand_Uninstall(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			p := Plugin{}
 			p.updateConfig(func(conf *config) {
-				conf.mattermostSiteURL = mattermostSiteURL
+				conf.antimatterSiteURL = antimatterSiteURL
 			})
 			isSendEphemeralPostCalled := false
 			currentTestAPI := api
@@ -624,7 +624,7 @@ func TestPlugin_ExecuteCommand_Assign(t *testing.T) {
 	tc := TestConfiguration{}
 	p.updateConfig(func(conf *config) {
 		conf.Secret = tc.Secret
-		conf.mattermostSiteURL = mattermostSiteURL
+		conf.antimatterSiteURL = antimatterSiteURL
 	})
 
 	tests := map[string]struct {

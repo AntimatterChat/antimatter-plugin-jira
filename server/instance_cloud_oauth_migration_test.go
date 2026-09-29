@@ -25,7 +25,7 @@ import (
 
 func TestCloudOAuthMigration(t *testing.T) {
 	jiraCloudURL := "https://mmtest.atlassian.net"
-	mmUserID := "someuserid"
+	amUserID := "someuserid"
 
 	for name, tc := range map[string]struct {
 		connection            *Connection
@@ -37,10 +37,10 @@ func TestCloudOAuthMigration(t *testing.T) {
 			connection: nil,
 			setup:      func(p *Plugin, api *plugintest.API) (instanceID string) { return "" },
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, _, err := p.LoadUserInstance(types.ID(mmUserID), jiraCloudURL)
+				_, _, err := p.LoadUserInstance(types.ID(amUserID), jiraCloudURL)
 				require.Error(t, err)
 
-				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.Error(t, err)
 				require.Equal(t, "https://mmtest.atlassian.net: jira_instance_b5f8e96862ed24709919a73271ae8851: not found", err.Error())
 			},
@@ -49,17 +49,17 @@ func TestCloudOAuthMigration(t *testing.T) {
 			connection: nil,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
 				api.On("LogDebug", "Stored: new Jira Cloud instance: https://mmtest.atlassian.net as jira_instance_b5f8e96862ed24709919a73271ae8851").Twice().Return(nil)
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				return jiraCloudURL
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, _, err := p.LoadUserInstance(types.ID(mmUserID), jiraCloudURL)
+				_, _, err := p.LoadUserInstance(types.ID(amUserID), jiraCloudURL)
 				require.Error(t, err)
 
 				// this should return an error but doesn't, since we don't return an error if the user's "Connection" doesn't exist in the kv store
-				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 			},
 		},
@@ -71,24 +71,24 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        nil,
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
 				api.On("LogDebug", "Stored: new Jira Cloud instance: https://mmtest.atlassian.net as jira_instance_b5f8e96862ed24709919a73271ae8851").Return(nil)
 				api.On("LogDebug", "Stored: user someuserid key:user_daa0ef689b843fada63e9f383fce33e1: connected to:[\"https://mmtest.atlassian.net\"]").Return(nil)
 				api.On("LogDebug", "Stored: connection, keys:\n\t6d03c97fdd1dee73b64caeca04e3e0d6 (someuserid): \n\t0f1a5629834c263cd6a3d59ce216c1f5 (): someuserid").Return(nil)
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				return jiraCloudURL
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, i, err := p.LoadUserInstance(types.ID(mmUserID), jiraCloudURL)
+				_, i, err := p.LoadUserInstance(types.ID(amUserID), jiraCloudURL)
 				require.NoError(t, err)
 				require.Equal(t, CloudInstanceType, i.Common().Type)
 
-				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 			},
 		},
@@ -99,7 +99,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				api.On("LogDebug", "Stored: user someuserid key:user_daa0ef689b843fada63e9f383fce33e1: connected to:[\"https://mmtest.atlassian.net\"]").Return(nil)
 				api.On("LogDebug", "Stored: connection, keys:\n\t6d03c97fdd1dee73b64caeca04e3e0d6 (someuserid): \n\t0f1a5629834c263cd6a3d59ce216c1f5 (): someuserid").Return(nil)
 
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				api.On("LogDebug", "Installing cloud-oauth over existing cloud JWT instance. Carrying over existing saved JWT instance.").Return(nil)
@@ -112,13 +112,13 @@ func TestCloudOAuthMigration(t *testing.T) {
 				return jiraCloudURL
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, _, err := p.LoadUserInstance(types.ID(mmUserID), jiraCloudURL)
+				_, _, err := p.LoadUserInstance(types.ID(amUserID), jiraCloudURL)
 				require.Error(t, err)
 
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Return(nil)
 
 				// this should return an error but doesn't, since we don't return an error if the user's "Connection" doesn't exist in the kv store
-				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 			},
 		},
@@ -130,7 +130,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        nil,
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -138,7 +138,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				api.On("LogDebug", "Stored: user someuserid key:user_daa0ef689b843fada63e9f383fce33e1: connected to:[\"https://mmtest.atlassian.net\"]").Return(nil)
 				api.On("LogDebug", "Stored: connection, keys:\n\t6d03c97fdd1dee73b64caeca04e3e0d6 (someuserid): \n\t0f1a5629834c263cd6a3d59ce216c1f5 (): someuserid").Return(nil)
 
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				api.On("LogDebug", "Installing cloud-oauth over existing cloud JWT instance. Carrying over existing saved JWT instance.").Return(nil)
@@ -152,7 +152,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Return(nil)
-				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 				require.NotNil(t, c)
 				require.NotNil(t, i)
@@ -167,7 +167,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        nil,
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -175,7 +175,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				api.On("LogDebug", "Stored: user someuserid key:user_daa0ef689b843fada63e9f383fce33e1: connected to:[\"https://mmtest.atlassian.net\"]").Return(nil)
 				api.On("LogDebug", "Stored: connection, keys:\n\t6d03c97fdd1dee73b64caeca04e3e0d6 (someuserid): \n\t0f1a5629834c263cd6a3d59ce216c1f5 (): someuserid").Return(nil)
 
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				api.On("LogDebug", "Installing cloud-oauth over existing cloud JWT instance. Carrying over existing saved JWT instance.").Return(nil)
@@ -196,7 +196,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Return(nil)
-				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 				require.NotNil(t, c)
 				require.NotNil(t, i)
@@ -211,7 +211,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        &oauth2.Token{RefreshToken: "somerefreshtoken", AccessToken: "someaccesstoken"},
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudOAuthInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -219,7 +219,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				api.On("LogDebug", "Stored: user someuserid key:user_daa0ef689b843fada63e9f383fce33e1: connected to:[\"https://mmtest.atlassian.net\"]").Return(nil)
 				api.On("LogDebug", "Stored: connection, keys:\n\t6d03c97fdd1dee73b64caeca04e3e0d6 (someuserid): \n\t0f1a5629834c263cd6a3d59ce216c1f5 (): someuserid").Return(nil)
 
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				api.On("LogDebug", "Installing cloud-oauth over existing cloud JWT instance. Carrying over existing saved JWT instance.").Return(nil)
@@ -250,7 +250,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 
 				// Times(0) means this will not get logged
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Times(0).Return(nil)
-				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 				require.NotNil(t, c)
 				require.NotNil(t, i)
@@ -265,7 +265,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        &oauth2.Token{RefreshToken: "somerefreshtoken", AccessToken: "someaccesstoken"},
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudOAuthInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -273,7 +273,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				api.On("LogDebug", "Stored: user someuserid key:user_daa0ef689b843fada63e9f383fce33e1: connected to:[\"https://mmtest.atlassian.net\"]").Return(nil)
 				api.On("LogDebug", "Stored: connection, keys:\n\t6d03c97fdd1dee73b64caeca04e3e0d6 (someuserid): \n\t0f1a5629834c263cd6a3d59ce216c1f5 (): someuserid").Return(nil)
 
-				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, mmUserID)
+				_, _, err := p.installInactiveCloudInstance(jiraCloudURL, amUserID)
 				require.NoError(t, err)
 
 				api.On("LogDebug", "Installing cloud-oauth over existing cloud JWT instance. Carrying over existing saved JWT instance.").Return(nil)
@@ -304,7 +304,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 
 				// Times(0) means this will not get logged
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Times(0).Return(nil)
-				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 				require.NotNil(t, c)
 				require.NotNil(t, i)
@@ -326,12 +326,12 @@ func TestCloudOAuthMigration(t *testing.T) {
 				return jiraCloudURL
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, _, err := p.LoadUserInstance(types.ID(mmUserID), jiraCloudURL)
+				_, _, err := p.LoadUserInstance(types.ID(amUserID), jiraCloudURL)
 				require.Error(t, err)
 
 				// Times(0) means this will not get logged
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Times(0).Return(nil)
-				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.Error(t, err)
 				require.Equal(t, "failed to get Jira client for the user : failed to create client for OAuth instance: no JWT instance found, and connection's OAuth token is missing", err.Error())
 			},
@@ -344,7 +344,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        &oauth2.Token{RefreshToken: "somerefreshtoken", AccessToken: "someaccesstoken"},
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudOAuthInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -379,7 +379,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 
 				// Times(0) means this will not get logged
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Times(0).Return(nil)
-				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 				require.NotNil(t, c)
 				require.NotNil(t, i)
@@ -394,7 +394,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "",
 				OAuth2Token:        &oauth2.Token{RefreshToken: "somerefreshtoken", AccessToken: "someaccesstoken"},
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudOAuthInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -435,7 +435,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 
 				// Times(0) means this will not get logged
 				api.On("LogDebug", "Returning a JWT token client since the stored JWT instance is not nil and the user's oauth token is nil").Times(0).Return(nil)
-				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(mmUserID))
+				c, i, conn, err := p.getClient(types.ID(jiraCloudURL), types.ID(amUserID))
 				require.NoError(t, err)
 				require.NotNil(t, c)
 				require.NotNil(t, i)
@@ -460,10 +460,10 @@ func TestCloudOAuthMigration(t *testing.T) {
 				return fakeJiraServer.URL
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, _, err := p.LoadUserInstance(types.ID(mmUserID), instanceID)
+				_, _, err := p.LoadUserInstance(types.ID(amUserID), instanceID)
 				require.Error(t, err)
 
-				_, _, _, err = p.getClient(types.ID(instanceID), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(instanceID), types.ID(amUserID))
 				require.Error(t, err)
 				require.Equal(t, "failed to get a Jira client for : no access token, please use /jira connect", err.Error())
 			},
@@ -476,7 +476,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 				Oauth1AccessSecret: "jiraserveraccesssecret",
 				OAuth2Token:        nil,
 				Settings:           &ConnectionSettings{},
-				MattermostUserID:   types.ID(mmUserID),
+				AntimatterUserID:   types.ID(amUserID),
 			},
 			connectedInstanceType: CloudOAuthInstanceType,
 			setup: func(p *Plugin, api *plugintest.API) (instanceID string) {
@@ -502,10 +502,10 @@ func TestCloudOAuthMigration(t *testing.T) {
 				return fakeJiraServer.URL
 			},
 			runAssertions: func(p *Plugin, api *plugintest.API, instanceID string) {
-				_, _, err := p.LoadUserInstance(types.ID(mmUserID), instanceID)
+				_, _, err := p.LoadUserInstance(types.ID(amUserID), instanceID)
 				require.NoError(t, err)
 
-				_, _, _, err = p.getClient(types.ID(instanceID), types.ID(mmUserID))
+				_, _, _, err = p.getClient(types.ID(instanceID), types.ID(amUserID))
 				require.NoError(t, err)
 			},
 		},
@@ -513,7 +513,7 @@ func TestCloudOAuthMigration(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			p := &Plugin{}
 			p.updateConfig(func(conf *config) {
-				conf.mattermostSiteURL = mattermostSiteURL
+				conf.antimatterSiteURL = antimatterSiteURL
 			})
 
 			api := &plugintest.API{}
@@ -547,11 +547,11 @@ func TestCloudOAuthMigration(t *testing.T) {
 			installedInstanceID := tc.setup(p, api)
 
 			if tc.connection != nil {
-				err = p.userStore.StoreConnection(types.ID(installedInstanceID), types.ID(mmUserID), tc.connection)
+				err = p.userStore.StoreConnection(types.ID(installedInstanceID), types.ID(amUserID), tc.connection)
 				require.NoError(t, err)
 
 				connectedInstances := NewInstances(newInstanceCommon(p, tc.connectedInstanceType, types.ID(installedInstanceID)))
-				storeUser := User{ConnectedInstances: connectedInstances, MattermostUserID: types.ID(mmUserID)}
+				storeUser := User{ConnectedInstances: connectedInstances, AntimatterUserID: types.ID(amUserID)}
 				err = p.userStore.StoreUser(&storeUser)
 				require.NoError(t, err)
 			}

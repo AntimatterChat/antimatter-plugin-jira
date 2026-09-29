@@ -156,7 +156,7 @@ func (ci *cloudOAuthInstance) getClientForConnection(connection *Connection) (*j
 	if err != nil {
 		// Disconnect the user and notify them to reconnect their account
 		if strings.Contains(err.Error(), "invalid_grant") {
-			ci.Plugin.disconnectUserDueToExpiredToken(connection.MattermostUserID, ci.GetID())
+			ci.Plugin.disconnectUserDueToExpiredToken(connection.AntimatterUserID, ci.GetID())
 			return nil, nil, errors.Wrap(err, "your Jira token has expired, please use `/jira connect` to reconnect your account")
 		}
 		return nil, nil, errors.Wrap(err, "failed to get a new refreshed token for the user")
@@ -166,7 +166,7 @@ func (ci *cloudOAuthInstance) getClientForConnection(connection *Connection) (*j
 		connection.OAuth2Token = updatedToken
 
 		// Store this new access token & refresh token to get a new access token in future when it has expired
-		if err = ci.Plugin.userStore.StoreConnection(ci.Common().InstanceID, connection.MattermostUserID, connection); err != nil {
+		if err = ci.Plugin.userStore.StoreConnection(ci.Common().InstanceID, connection.AntimatterUserID, connection); err != nil {
 			return nil, nil, err
 		}
 	}
@@ -174,7 +174,7 @@ func (ci *cloudOAuthInstance) getClientForConnection(connection *Connection) (*j
 	resourceID, err := ci.resolveJiraCloudResourceID(*client)
 	if err != nil {
 		if errors.Is(err, errTokenExpired) {
-			ci.Plugin.disconnectUserDueToExpiredToken(connection.MattermostUserID, ci.GetID())
+			ci.Plugin.disconnectUserDueToExpiredToken(connection.AntimatterUserID, ci.GetID())
 			return nil, nil, errors.New("your Jira token has expired, please use `/jira connect` to reconnect your account")
 		}
 		return nil, nil, err
@@ -200,9 +200,9 @@ func (ci *cloudOAuthInstance) GetDisplayDetails() map[string]string {
 	}
 }
 
-func (ci *cloudOAuthInstance) GetUserConnectURL(mattermostUserID string) (string, *http.Cookie, error) {
+func (ci *cloudOAuthInstance) GetUserConnectURL(antimatterUserID string) (string, *http.Cookie, error) {
 	oauthConf := ci.GetOAuthConfig()
-	state := fmt.Sprintf("%s_%s", model.NewId()[0:15], mattermostUserID)
+	state := fmt.Sprintf("%s_%s", model.NewId()[0:15], antimatterUserID)
 	url := oauthConf.AuthCodeURL(
 		state,
 		oauth2.SetAuthURLParam("audience", "api.atlassian.com"),
@@ -212,7 +212,7 @@ func (ci *cloudOAuthInstance) GetUserConnectURL(mattermostUserID string) (string
 		oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 		oauth2.SetAuthURLParam("code_challenge", ci.CodeChallenge),
 	)
-	if err := ci.Plugin.otsStore.StoreOneTimeSecret(mattermostUserID, state); err != nil {
+	if err := ci.Plugin.otsStore.StoreOneTimeSecret(antimatterUserID, state); err != nil {
 		return "", nil, err
 	}
 	return url, nil, nil
@@ -247,7 +247,7 @@ func (ci *cloudOAuthInstance) GetManageWebhooksURL() string {
 	return fmt.Sprintf("%s/plugins/servlet/webhooks", ci.GetJiraBaseURL())
 }
 
-func (ci *cloudOAuthInstance) GetMattermostKey() string {
+func (ci *cloudOAuthInstance) GetAntimatterKey() string {
 	return ci.MattermostKey
 }
 

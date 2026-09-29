@@ -18,7 +18,7 @@ import (
 
 const (
 	argJiraJWT       = "jwt"
-	argMMToken       = "mm_token"
+	argAMToken       = "mm_token"
 	cookieSecretName = "jira_temp_cookie"
 )
 
@@ -43,11 +43,11 @@ func (p *Plugin) httpACUserRedirect(w http.ResponseWriter, r *http.Request, inst
 	return ci.Plugin.respondTemplate(w, r, ContentTypeHTML, struct {
 		SubmitURL  string
 		ArgJiraJWT string
-		ArgMMToken string
+		ArgAMToken string
 	}{
 		SubmitURL:  submitURL,
 		ArgJiraJWT: argJiraJWT,
-		ArgMMToken: argMMToken,
+		ArgAMToken: argAMToken,
 	})
 }
 
@@ -85,7 +85,7 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 		return respondErr(w, http.StatusBadRequest, errors.Errorf("could not get user info for client, err: %v", err))
 	}
 
-	mmToken := r.FormValue(argMMToken)
+	amToken := r.FormValue(argAMToken)
 	connection := &Connection{
 		PluginVersion: manifest.Version,
 		User: jira.User{
@@ -115,22 +115,22 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 				`Please also make sure you are signed into Mattermost at `+siteURL))
 	}
 
-	mattermostUserID, secret, err := p.ParseAuthToken(mmToken)
+	antimatterUserID, secret, err := p.ParseAuthToken(amToken)
 	if err != nil {
 		return respondErr(w, http.StatusUnauthorized, err)
 	}
 
-	mmuser, err := p.client.User.Get(mattermostUserID)
+	amuser, err := p.client.User.Get(antimatterUserID)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError,
-			errors.WithMessage(err, "failed to load user "+mattermostUserID))
+			errors.WithMessage(err, "failed to load user "+antimatterUserID))
 	}
 
 	_, urlpath := splitInstancePath(r.URL.Path)
 	switch urlpath {
 	case routeACUserConnected:
 		storedSecret := ""
-		storedSecret, err = p.otsStore.LoadOneTimeSecret(mattermostUserID)
+		storedSecret, err = p.otsStore.LoadOneTimeSecret(antimatterUserID)
 		if err != nil {
 			return respondErr(w, http.StatusUnauthorized, err)
 		}
@@ -139,16 +139,16 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 		if len(parsed) < 2 || parsed[0] != secret || parsed[1] != secretCookie.Value {
 			return respondErr(w, http.StatusUnauthorized, errors.New("this link has already been used"))
 		}
-		err = p.connectUser(ci, types.ID(mattermostUserID), connection)
+		err = p.connectUser(ci, types.ID(antimatterUserID), connection)
 		if err != nil {
 			return respondErr(w, http.StatusInternalServerError, err)
 		}
 		// TODO For https://github.com/mattermost/mattermost-plugin-jira/issues/149, need a channel ID
 		// msg := fmt.Sprintf("You have successfully connected your Jira account (**%s**).", connection.DisplayName)
-		// _ = p.client.Post.SendEphemeralPost(mattermostUserID, makePost(p.getUserID(), channelID, msg))
+		// _ = p.client.Post.SendEphemeralPost(antimatterUserID, makePost(p.getUserID(), channelID, msg))
 
 	case routeACUserDisconnected:
-		_, err = p.DisconnectUser(ci.InstanceID.String(), types.ID(mattermostUserID))
+		_, err = p.DisconnectUser(ci.InstanceID.String(), types.ID(antimatterUserID))
 
 	case routeACUserConfirm:
 
@@ -160,12 +160,12 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
 
-	mmDisplayName := mmuser.GetDisplayName(model.ShowFullName)
-	userName := mmuser.GetDisplayName(model.ShowUsername)
-	if mmDisplayName == userName {
-		mmDisplayName = "@" + mmDisplayName
+	amDisplayName := amuser.GetDisplayName(model.ShowFullName)
+	userName := amuser.GetDisplayName(model.ShowUsername)
+	if amDisplayName == userName {
+		amDisplayName = "@" + amDisplayName
 	} else {
-		mmDisplayName += " (@" + userName + ")"
+		amDisplayName += " (@" + userName + ")"
 	}
 
 	// This set of props should work for all relevant routes/templates
@@ -175,17 +175,17 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 		ConnectSubmitURL      string
 		DisconnectSubmitURL   string
 		ArgJiraJWT            string
-		ArgMMToken            string
-		MMToken               string
+		ArgAMToken            string
+		AMToken               string
 		JiraDisplayName       string
-		MattermostDisplayName string
+		AntimatterDisplayName string
 	}{
 		DisconnectSubmitURL:   disconnectSubmitURL,
 		ConnectSubmitURL:      connectSubmitURL,
 		ArgJiraJWT:            argJiraJWT,
-		ArgMMToken:            argMMToken,
-		MMToken:               mmToken,
+		ArgAMToken:            argAMToken,
+		AMToken:               amToken,
 		JiraDisplayName:       jUser.DisplayName,
-		MattermostDisplayName: mmDisplayName,
+		AntimatterDisplayName: amDisplayName,
 	})
 }

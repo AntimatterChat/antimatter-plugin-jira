@@ -122,7 +122,7 @@ type config struct {
 	// Maximum attachment size allowed to be uploaded to Jira
 	maxAttachmentSize types.ByteSize
 
-	mattermostSiteURL string
+	antimatterSiteURL string
 	rsaKey            *rsa.PrivateKey
 }
 
@@ -201,9 +201,9 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	ec.MaxAttachmentSize = strings.TrimSpace(ec.MaxAttachmentSize)
 	maxAttachmentSize := defaultMaxAttachmentSize
-	mattermostMaxAttachmentSize := p.API.GetConfig().FileSettings.MaxFileSize
-	if mattermostMaxAttachmentSize != nil {
-		maxAttachmentSize = types.ByteSize(*mattermostMaxAttachmentSize)
+	antimatterMaxAttachmentSize := p.API.GetConfig().FileSettings.MaxFileSize
+	if antimatterMaxAttachmentSize != nil {
+		maxAttachmentSize = types.ByteSize(*antimatterMaxAttachmentSize)
 	}
 	if len(ec.MaxAttachmentSize) > 0 {
 		maxAttachmentSize, err = types.ParseByteSize(ec.MaxAttachmentSize)
@@ -374,10 +374,10 @@ func (p *Plugin) OnActivate() error {
 		return errors.Wrap(err, "failed to ensure bot account")
 	}
 
-	mattermostSiteURL := ""
+	antimatterSiteURL := ""
 	ptr := p.client.Configuration.GetConfig().ServiceSettings.SiteURL
 	if ptr != nil {
-		mattermostSiteURL = *ptr
+		antimatterSiteURL = *ptr
 	} else {
 		return errors.New("please configure the Mattermost server's SiteURL, then restart the plugin.")
 	}
@@ -394,7 +394,7 @@ func (p *Plugin) OnActivate() error {
 
 	p.updateConfig(func(conf *config) {
 		conf.botUserID = botUserID
-		conf.mattermostSiteURL = mattermostSiteURL
+		conf.antimatterSiteURL = antimatterSiteURL
 		conf.rsaKey = rsaKey
 	})
 
@@ -577,7 +577,7 @@ func (p *Plugin) GetPluginURL() string {
 }
 
 func (p *Plugin) GetSiteURL() string {
-	return p.getConfig().mattermostSiteURL
+	return p.getConfig().antimatterSiteURL
 }
 
 func (p *Plugin) CreateFullURLPath(extensionPath string) string {

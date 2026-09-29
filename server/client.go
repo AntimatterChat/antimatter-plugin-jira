@@ -80,7 +80,7 @@ type IssueService interface {
 	GetIssue(key string, options *jira.GetQueryOptions) (*jira.Issue, error)
 	CreateIssue(issue *jira.Issue) (*jira.Issue, error)
 
-	AddAttachment(mmClient pluginapi.Client, issueKey, fileID string, maxSize types.ByteSize) (mattermostName, jiraName, mime string, err error)
+	AddAttachment(amClient pluginapi.Client, issueKey, fileID string, maxSize types.ByteSize) (antimatterName, jiraName, mime string, err error)
 	AddComment(issueKey string, comment *jira.Comment) (*jira.Comment, error)
 	DoTransition(issueKey, transitionID string) error
 	GetCreateMetaInfo(api plugin.API, options *jira.GetQueryOptions) (*jira.CreateMetaInfo, error)
@@ -388,9 +388,9 @@ func (client JiraClient) DoTransition(issueKey, transitionID string) error {
 }
 
 // AddAttachment uploads a file attachment
-func (client JiraClient) AddAttachment(mmClient pluginapi.Client, issueKey, fileID string, maxSize types.ByteSize) (
-	mattermostName, jiraName, mime string, err error) {
-	fileinfo, err := mmClient.File.GetInfo(fileID)
+func (client JiraClient) AddAttachment(amClient pluginapi.Client, issueKey, fileID string, maxSize types.ByteSize) (
+	antimatterName, jiraName, mime string, err error) {
+	fileinfo, err := amClient.File.GetInfo(fileID)
 	if err != nil {
 		return "", "", "", err
 	}
@@ -399,7 +399,7 @@ func (client JiraClient) AddAttachment(mmClient pluginapi.Client, issueKey, file
 			errors.Errorf("Maximum attachment size %v exceeded, file size %v", maxSize, types.ByteSize(fileinfo.Size))
 	}
 
-	fileBytes, err := mmClient.File.GetByPath(fileinfo.Path)
+	fileBytes, err := amClient.File.GetByPath(fileinfo.Path)
 	if err != nil {
 		return "", "", "", err
 	}

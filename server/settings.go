@@ -53,7 +53,7 @@ func (connection *Connection) updateRolesForDMNotification(role, roleStatus stri
 	return "", true
 }
 
-func (p *Plugin) settingsNotifications(header *model.CommandArgs, instanceID, mattermostUserID types.ID, connection *Connection, args []string) *model.CommandResponse {
+func (p *Plugin) settingsNotifications(header *model.CommandArgs, instanceID, antimatterUserID types.ID, connection *Connection, args []string) *model.CommandResponse {
 	helpTextPrefix := "`/jira settings notifications [assignee|mention|reporter|watching] [value]`\n"
 	helpText := ""
 	if len(args) != 3 {
@@ -72,13 +72,13 @@ func (p *Plugin) settingsNotifications(header *model.CommandArgs, instanceID, ma
 		return p.response(header, helpText)
 	}
 
-	if err := p.userStore.StoreConnection(instanceID, mattermostUserID, connection); err != nil {
+	if err := p.userStore.StoreConnection(instanceID, antimatterUserID, connection); err != nil {
 		p.errorf("settingsNotifications, err: %v", err)
 		p.responsef(header, errStoreNewSettings, err)
 	}
 
 	// send back the actual value
-	updatedConnection, err := p.userStore.LoadConnection(instanceID, mattermostUserID)
+	updatedConnection, err := p.userStore.LoadConnection(instanceID, antimatterUserID)
 	if err != nil {
 		return p.responsef(header, errConnectToJira, err)
 	}

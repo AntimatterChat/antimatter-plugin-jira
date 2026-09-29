@@ -14,7 +14,7 @@
 			}
 
 			AP.getLocation(function (loc) {
-				document.getElementById('{{ .ArgMMToken }}').value = getParameterByName('{{ .ArgMMToken }}', loc);
+				document.getElementById('{{ .ArgAMToken }}').value = getParameterByName('{{ .ArgAMToken }}', loc);
 			});
 
 			AP.context.getToken(function (token) {
@@ -26,7 +26,7 @@
 	<body>
 		<form id="user_connect" name="user_connect" action="{{ .SubmitURL }}">
 			<input type="hidden" id="{{ .ArgJiraJWT }}" name="{{ .ArgJiraJWT}}" value="none"/>
-			<input type="hidden" id="{{ .ArgMMToken }}" name="{{ .ArgMMToken}}" value="none"/>
+			<input type="hidden" id="{{ .ArgAMToken }}" name="{{ .ArgAMToken}}" value="none"/>
 		</form>
 	</body>
 </html>

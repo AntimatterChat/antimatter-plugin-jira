@@ -64,7 +64,7 @@ func (si *serverInstance) GetManageWebhooksURL() string {
 	return fmt.Sprintf("%s/plugins/servlet/webhooks", si.GetJiraBaseURL())
 }
 
-func (si *serverInstance) GetMattermostKey() string {
+func (si *serverInstance) GetAntimatterKey() string {
 	return si.MattermostKey
 }
 
@@ -74,7 +74,7 @@ func (si *serverInstance) GetDisplayDetails() map[string]string {
 	}
 }
 
-func (si *serverInstance) GetUserConnectURL(mattermostUserID string) (returnURL string, cookie *http.Cookie, returnErr error) {
+func (si *serverInstance) GetUserConnectURL(antimatterUserID string) (returnURL string, cookie *http.Cookie, returnErr error) {
 	defer func() {
 		if returnErr == nil {
 			return
@@ -88,7 +88,7 @@ func (si *serverInstance) GetUserConnectURL(mattermostUserID string) (returnURL 
 		return "", nil, err
 	}
 
-	err = si.Plugin.otsStore.StoreOauth1aTemporaryCredentials(mattermostUserID,
+	err = si.Plugin.otsStore.StoreOauth1aTemporaryCredentials(antimatterUserID,
 		&OAuth1aTemporaryCredentials{Token: token, Secret: secret})
 	if err != nil {
 		return "", nil, err

@@ -57,13 +57,13 @@ func (ti testInstance) GetManageWebhooksURL() string {
 func (ti testInstance) GetPlugin() *Plugin {
 	return ti.Plugin
 }
-func (ti testInstance) GetMattermostKey() string {
-	return "jiraTestInstanceMattermostKey"
+func (ti testInstance) GetAntimatterKey() string {
+	return "jiraTestInstanceAntimatterKey"
 }
 func (ti testInstance) GetDisplayDetails() map[string]string {
 	return map[string]string{}
 }
-func (ti testInstance) GetUserConnectURL(mattermostUserID string) (string, *http.Cookie, error) {
+func (ti testInstance) GetUserConnectURL(antimatterUserID string) (string, *http.Cookie, error) {
 	return fmt.Sprintf("%s/UserConnectURL.some", ti.GetURL()), nil, nil
 }
 func (ti testInstance) GetClient(*Connection) (Client, error) {
@@ -91,10 +91,10 @@ func (store mockUserStore) LoadConnection(types.ID, types.ID) (*Connection, erro
 		},
 	}, nil
 }
-func (store mockUserStore) LoadMattermostUserID(instanceID types.ID, jiraUserName string) (types.ID, error) {
+func (store mockUserStore) LoadAntimatterUserID(instanceID types.ID, jiraUserName string) (types.ID, error) {
 	return mockUserIDWithNotifications, nil
 }
-func (store mockUserStore) DeleteConnection(instanceID, mattermostUserID types.ID) error {
+func (store mockUserStore) DeleteConnection(instanceID, antimatterUserID types.ID) error {
 	return nil
 }
 func (store mockUserStore) CountUsers() (int, error) {

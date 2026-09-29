@@ -117,7 +117,7 @@ func TestGetJiraUserFromMentions(t *testing.T) {
 		},
 		"Connected users are shown and returned as Jira Users, when mentioned": {
 			mentions: &model.UserMentionMap{
-				"connected_user": string(testUser.MattermostUserID)},
+				"connected_user": string(testUser.AntimatterUserID)},
 			userSearch:     "connected_user",
 			expectedResult: &jira.User{AccountID: "test-AccountID"},
 			SetupAPI:       func(api *plugintest.API) {},

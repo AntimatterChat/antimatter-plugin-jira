@@ -64,10 +64,10 @@ type InstanceStore interface {
 type UserStore interface {
 	LoadUser(types.ID) (*User, error)
 	StoreUser(*User) error
-	StoreConnection(instanceID, mattermostUserID types.ID, connection *Connection) error
-	LoadConnection(instanceID, mattermostUserID types.ID) (*Connection, error)
-	LoadMattermostUserID(instanceID types.ID, jiraUsername string) (types.ID, error)
-	DeleteConnection(instanceID, mattermostUserID types.ID) error
+	StoreConnection(instanceID, antimatterUserID types.ID, connection *Connection) error
+	LoadConnection(instanceID, antimatterUserID types.ID) (*Connection, error)
+	LoadAntimatterUserID(instanceID types.ID, jiraUsername string) (types.ID, error)
+	DeleteConnection(instanceID, antimatterUserID types.ID) error
 	CountUsers() (int, error)
 	MapUsers(func(user *User) error) error
 }
@@ -75,8 +75,8 @@ type UserStore interface {
 type OTSStore interface {
 	StoreOneTimeSecret(token, secret string) error
 	LoadOneTimeSecret(token string) (string, error)
-	StoreOauth1aTemporaryCredentials(mmUserID string, credentials *OAuth1aTemporaryCredentials) error
-	OneTimeLoadOauth1aTemporaryCredentials(mmUserID string) (*OAuth1aTemporaryCredentials, error)
+	StoreOauth1aTemporaryCredentials(amUserID string, credentials *OAuth1aTemporaryCredentials) error
+	OneTimeLoadOauth1aTemporaryCredentials(amUserID string) (*OAuth1aTemporaryCredentials, error)
 }
 
 // Number of items to retrieve in KVList operations, made a variable so
@@ -133,83 +133,83 @@ func (store store) set(key string, v interface{}) (returnErr error) {
 	return nil
 }
 
-func (store store) StoreConnection(instanceID, mattermostUserID types.ID, connection *Connection) (returnErr error) {
+func (store store) StoreConnection(instanceID, antimatterUserID types.ID, connection *Connection) (returnErr error) {
 	defer func() {
 		if returnErr == nil {
 			return
 		}
 		returnErr = errors.WithMessage(returnErr,
-			fmt.Sprintf("failed to store connection, mattermostUserID:%s, Jira user:%s", mattermostUserID, connection.DisplayName))
+			fmt.Sprintf("failed to store connection, antimatterUserID:%s, Jira user:%s", antimatterUserID, connection.DisplayName))
 	}()
 
 	connection.PluginVersion = manifest.Version
-	connection.MattermostUserID = mattermostUserID
+	connection.AntimatterUserID = antimatterUserID
 
-	err := store.set(keyWithInstanceID(instanceID, mattermostUserID), connection)
+	err := store.set(keyWithInstanceID(instanceID, antimatterUserID), connection)
 	if err != nil {
 		return err
 	}
 
-	err = store.set(keyWithInstanceID(instanceID, connection.JiraAccountID()), mattermostUserID)
+	err = store.set(keyWithInstanceID(instanceID, connection.JiraAccountID()), antimatterUserID)
 	if err != nil {
 		return err
 	}
 
-	// Also store AccountID -> mattermostUserID because Jira Cloud is deprecating the name field
+	// Also store AccountID -> antimatterUserID because Jira Cloud is deprecating the name field
 	// https://developer.atlassian.com/cloud/jira/platform/api-changes-for-user-privacy-announcement/
-	err = store.set(keyWithInstanceID(instanceID, connection.JiraAccountID()), mattermostUserID)
+	err = store.set(keyWithInstanceID(instanceID, connection.JiraAccountID()), antimatterUserID)
 	if err != nil {
 		return err
 	}
 
 	store.plugin.debugf("Stored: connection, keys:\n\t%s (%s): %s\n\t%s (%s): %s",
-		keyWithInstanceID(instanceID, mattermostUserID), mattermostUserID, connection.DisplayName,
-		keyWithInstanceID(instanceID, connection.JiraAccountID()), connection.JiraAccountID(), mattermostUserID)
+		keyWithInstanceID(instanceID, antimatterUserID), antimatterUserID, connection.DisplayName,
+		keyWithInstanceID(instanceID, connection.JiraAccountID()), connection.JiraAccountID(), antimatterUserID)
 
 	return nil
 }
 
-func (store store) LoadConnection(instanceID, mattermostUserID types.ID) (*Connection, error) {
+func (store store) LoadConnection(instanceID, antimatterUserID types.ID) (*Connection, error) {
 	c := &Connection{}
-	err := store.get(keyWithInstanceID(instanceID, mattermostUserID), c)
+	err := store.get(keyWithInstanceID(instanceID, antimatterUserID), c)
 	if err != nil {
 		return nil, errors.Wrapf(err,
-			"failed to load connection for Mattermost user ID:%q, Jira:%q", mattermostUserID, instanceID)
+			"failed to load connection for Mattermost user ID:%q, Jira:%q", antimatterUserID, instanceID)
 	}
 	c.PluginVersion = manifest.Version
 	return c, nil
 }
 
-func (store store) LoadMattermostUserID(instanceID types.ID, jiraUserNameOrID string) (types.ID, error) {
-	mattermostUserID := types.ID("")
-	err := store.get(keyWithInstanceID(instanceID, types.ID(jiraUserNameOrID)), &mattermostUserID)
+func (store store) LoadAntimatterUserID(instanceID types.ID, jiraUserNameOrID string) (types.ID, error) {
+	antimatterUserID := types.ID("")
+	err := store.get(keyWithInstanceID(instanceID, types.ID(jiraUserNameOrID)), &antimatterUserID)
 	if err != nil {
 		return "", errors.Wrapf(err,
 			"failed to load Mattermost user ID for Jira username/ID: %s", jiraUserNameOrID)
 	}
 
-	if mattermostUserID == "" {
+	if antimatterUserID == "" {
 		return "", errors.Errorf("failed to load Mattermost user ID for Jira username/ID: %s", jiraUserNameOrID)
 	}
 
-	return mattermostUserID, nil
+	return antimatterUserID, nil
 }
 
-func (store store) DeleteConnection(instanceID, mattermostUserID types.ID) (returnErr error) {
+func (store store) DeleteConnection(instanceID, antimatterUserID types.ID) (returnErr error) {
 	defer func() {
 		if returnErr == nil {
 			return
 		}
 		returnErr = errors.WithMessage(returnErr,
-			fmt.Sprintf("failed to delete user, mattermostUserId:%s", mattermostUserID))
+			fmt.Sprintf("failed to delete user, antimatterUserId:%s", antimatterUserID))
 	}()
 
-	c, err := store.LoadConnection(instanceID, mattermostUserID)
+	c, err := store.LoadConnection(instanceID, antimatterUserID)
 	if err != nil {
 		return err
 	}
 
-	err = store.plugin.client.KV.Delete(keyWithInstanceID(instanceID, mattermostUserID))
+	err = store.plugin.client.KV.Delete(keyWithInstanceID(instanceID, antimatterUserID))
 	if err != nil {
 		return err
 	}
@@ -220,7 +220,7 @@ func (store store) DeleteConnection(instanceID, mattermostUserID types.ID) (retu
 	}
 
 	store.plugin.debugf("Deleted: user, keys: %s(%s), %s(%s)",
-		mattermostUserID, keyWithInstanceID(instanceID, mattermostUserID),
+		antimatterUserID, keyWithInstanceID(instanceID, antimatterUserID),
 		c.JiraAccountID(), keyWithInstanceID(instanceID, c.JiraAccountID()))
 	return nil
 }
@@ -231,28 +231,28 @@ func (store store) StoreUser(user *User) (returnErr error) {
 			return
 		}
 		returnErr = errors.WithMessage(returnErr,
-			fmt.Sprintf("failed to store user, mattermostUserId:%s", user.MattermostUserID))
+			fmt.Sprintf("failed to store user, antimatterUserId:%s", user.AntimatterUserID))
 	}()
 
 	user.PluginVersion = manifest.Version
 
-	key := hashkey(prefixUser, user.MattermostUserID.String())
+	key := hashkey(prefixUser, user.AntimatterUserID.String())
 	err := store.set(key, user)
 	if err != nil {
 		return err
 	}
 
-	store.plugin.debugf("Stored: user %s key:%s: connected to:%q", user.MattermostUserID, key, user.ConnectedInstances.IDs())
+	store.plugin.debugf("Stored: user %s key:%s: connected to:%q", user.AntimatterUserID, key, user.ConnectedInstances.IDs())
 	return nil
 }
 
-func (store store) LoadUser(mattermostUserID types.ID) (*User, error) {
-	user := NewUser(mattermostUserID)
-	key := hashkey(prefixUser, mattermostUserID.String())
+func (store store) LoadUser(antimatterUserID types.ID) (*User, error) {
+	user := NewUser(antimatterUserID)
+	key := hashkey(prefixUser, antimatterUserID.String())
 	err := store.get(key, user)
 	if err != nil {
 		return nil, errors.WithMessage(err,
-			fmt.Sprintf("failed to load Jira user for mattermostUserId:%s", mattermostUserID))
+			fmt.Sprintf("failed to load Jira user for antimatterUserId:%s", antimatterUserID))
 	}
 	return user, nil
 }
@@ -414,33 +414,33 @@ func (store store) LoadOneTimeSecret(key string) (string, error) {
 	return string(secret), nil
 }
 
-func (store store) StoreOauth1aTemporaryCredentials(mmUserID string, credentials *OAuth1aTemporaryCredentials) error {
+func (store store) StoreOauth1aTemporaryCredentials(amUserID string, credentials *OAuth1aTemporaryCredentials) error {
 	data, err := json.Marshal(&credentials)
 	if err != nil {
 		return err
 	}
 	// Expire in 15 minutes
-	_, err = store.plugin.client.KV.Set(hashkey(prefixOneTimeSecret, mmUserID), data, pluginapi.SetExpiry(15*60))
+	_, err = store.plugin.client.KV.Set(hashkey(prefixOneTimeSecret, amUserID), data, pluginapi.SetExpiry(15*60))
 	if err != nil {
-		return errors.WithMessage(err, "failed to store oauth temporary credentials for "+mmUserID)
+		return errors.WithMessage(err, "failed to store oauth temporary credentials for "+amUserID)
 	}
 	return nil
 }
 
-func (store store) OneTimeLoadOauth1aTemporaryCredentials(mmUserID string) (*OAuth1aTemporaryCredentials, error) {
+func (store store) OneTimeLoadOauth1aTemporaryCredentials(amUserID string) (*OAuth1aTemporaryCredentials, error) {
 	var credentials OAuth1aTemporaryCredentials
-	err := store.plugin.client.KV.Get(hashkey(prefixOneTimeSecret, mmUserID), &credentials)
+	err := store.plugin.client.KV.Get(hashkey(prefixOneTimeSecret, amUserID), &credentials)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to load temporary credentials for "+mmUserID)
+		return nil, errors.WithMessage(err, "failed to load temporary credentials for "+amUserID)
 	}
 	// If the key expired, appErr is nil, but the data is also nil
 	if len(credentials.Token) == 0 {
-		return nil, errors.Wrapf(kvstore.ErrNotFound, "temporary credentials for %s not found or expired, try to connect again", mmUserID)
+		return nil, errors.Wrapf(kvstore.ErrNotFound, "temporary credentials for %s not found or expired, try to connect again", amUserID)
 	}
 
-	err = store.plugin.client.KV.Delete(hashkey(prefixOneTimeSecret, mmUserID))
+	err = store.plugin.client.KV.Delete(hashkey(prefixOneTimeSecret, amUserID))
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to delete temporary credentials for "+mmUserID)
+		return nil, errors.WithMessage(err, "failed to delete temporary credentials for "+amUserID)
 	}
 	return &credentials, nil
 }
@@ -758,8 +758,8 @@ func MigrateV3InstancesToV2(p *Plugin) (JiraV2Instances, string) {
 
 // MigrateV2User migrates a user record from the V2 data model if needed. It
 // returns an up-to-date User object either way.
-func (p *Plugin) MigrateV2User(mattermostUserID types.ID) (*User, error) {
-	user, err := p.userStore.LoadUser(mattermostUserID)
+func (p *Plugin) MigrateV2User(antimatterUserID types.ID) (*User, error) {
+	user, err := p.userStore.LoadUser(antimatterUserID)
 	if errors.Cause(err) != kvstore.ErrNotFound {
 		// return the existing key (or error)
 		return user, err
@@ -771,9 +771,9 @@ func (p *Plugin) MigrateV2User(mattermostUserID types.ID) (*User, error) {
 		return nil, err
 	}
 
-	user = NewUser(mattermostUserID)
+	user = NewUser(antimatterUserID)
 	for _, instanceID := range instances.IDs() {
-		_, err = p.userStore.LoadConnection(instanceID, mattermostUserID)
+		_, err = p.userStore.LoadConnection(instanceID, antimatterUserID)
 		if errors.Cause(err) == kvstore.ErrNotFound {
 			continue
 		}

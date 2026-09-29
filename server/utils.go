@@ -29,16 +29,16 @@ const (
 	expiredTokenNotificationKeyPrefix = "expired_token_dm:"
 )
 
-func (p *Plugin) CreateBotDMPost(instanceID, mattermostUserID types.ID, message, postType string) (post *model.Post, returnErr error) {
+func (p *Plugin) CreateBotDMPost(instanceID, antimatterUserID types.ID, message, postType string) (post *model.Post, returnErr error) {
 	defer func() {
 		if returnErr != nil {
 			returnErr = errors.WithMessage(returnErr,
-				fmt.Sprintf("failed to create direct post to user %v: ", mattermostUserID))
+				fmt.Sprintf("failed to create direct post to user %v: ", antimatterUserID))
 		}
 	}()
 
 	// Don't send DMs to users who have turned off notifications
-	c, err := p.userStore.LoadConnection(instanceID, mattermostUserID)
+	c, err := p.userStore.LoadConnection(instanceID, antimatterUserID)
 	if err != nil {
 		// not connected to Jira, so no need to send a DM, and no need to report an error
 		return nil, nil
@@ -48,7 +48,7 @@ func (p *Plugin) CreateBotDMPost(instanceID, mattermostUserID types.ID, message,
 	}
 
 	conf := p.getConfig()
-	channel, err := p.client.Channel.GetDirect(mattermostUserID.String(), conf.botUserID)
+	channel, err := p.client.Channel.GetDirect(antimatterUserID.String(), conf.botUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -68,16 +68,16 @@ func (p *Plugin) CreateBotDMPost(instanceID, mattermostUserID types.ID, message,
 	return post, nil
 }
 
-func (p *Plugin) CreateBotDMtoMMUserID(mattermostUserID, format string, args ...interface{}) (post *model.Post, returnErr error) {
+func (p *Plugin) CreateBotDMtoMMUserID(antimatterUserID, format string, args ...interface{}) (post *model.Post, returnErr error) {
 	defer func() {
 		if returnErr != nil {
 			returnErr = errors.WithMessage(returnErr,
-				fmt.Sprintf("failed to create DMError to user %v: ", mattermostUserID))
+				fmt.Sprintf("failed to create DMError to user %v: ", antimatterUserID))
 		}
 	}()
 
 	conf := p.getConfig()
-	channel, err := p.client.Channel.GetDirect(mattermostUserID, conf.botUserID)
+	channel, err := p.client.Channel.GetDirect(antimatterUserID, conf.botUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -96,26 +96,26 @@ func (p *Plugin) CreateBotDMtoMMUserID(mattermostUserID, format string, args ...
 	return post, nil
 }
 
-func (p *Plugin) disconnectUserDueToExpiredToken(mattermostUserID types.ID, instanceID types.ID) {
-	_, disconnectErr := p.DisconnectUser(instanceID.String(), mattermostUserID)
+func (p *Plugin) disconnectUserDueToExpiredToken(antimatterUserID types.ID, instanceID types.ID) {
+	_, disconnectErr := p.DisconnectUser(instanceID.String(), antimatterUserID)
 	if disconnectErr != nil && errors.Cause(disconnectErr) == kvstore.ErrNotFound {
 		disconnectErr = nil
 	}
 	if disconnectErr != nil {
 		p.client.Log.Warn("Failed to disconnect user after token expiry",
-			"mattermostUserID", mattermostUserID,
+			"antimatterUserID", antimatterUserID,
 			"instanceID", instanceID,
 			"error", disconnectErr.Error())
 	}
 
-	dmKey := expiredTokenNotificationKeyPrefix + mattermostUserID.String() + ":" + instanceID.String()
+	dmKey := expiredTokenNotificationKeyPrefix + antimatterUserID.String() + ":" + instanceID.String()
 	ok, kvErr := p.client.KV.Set(dmKey, []byte("1"),
 		pluginapi.SetAtomic(nil),
 		pluginapi.SetExpiry(expiredTokenNotificationCooldown),
 	)
 	if kvErr != nil {
 		p.client.Log.Warn("Failed to set expired-token notification dedup marker; proceeding without dedup",
-			"mattermostUserID", mattermostUserID,
+			"antimatterUserID", antimatterUserID,
 			"instanceID", instanceID,
 			"error", kvErr.Error())
 	} else if !ok {
@@ -124,13 +124,13 @@ func (p *Plugin) disconnectUserDueToExpiredToken(mattermostUserID types.ID, inst
 
 	var notifyErr error
 	if disconnectErr != nil {
-		_, notifyErr = p.CreateBotDMtoMMUserID(mattermostUserID.String(),
+		_, notifyErr = p.CreateBotDMtoMMUserID(antimatterUserID.String(),
 			":warning: Your Jira connection has expired. Please manually disconnect and reconnect your account using:\n"+
 				"1. `/jira disconnect %s`\n"+
 				"2. `/jira connect %s`",
 			instanceID, instanceID)
 	} else {
-		_, notifyErr = p.CreateBotDMtoMMUserID(mattermostUserID.String(),
+		_, notifyErr = p.CreateBotDMtoMMUserID(antimatterUserID.String(),
 			":warning: Your Jira connection has expired. Please reconnect your account using `/jira connect %s`.",
 			instanceID)
 	}
@@ -140,7 +140,7 @@ func (p *Plugin) disconnectUserDueToExpiredToken(mattermostUserID types.ID, inst
 			label = "Failed to send token expiry notification to user after disconnect failure"
 		}
 		p.client.Log.Warn(label,
-			"mattermostUserID", mattermostUserID,
+			"antimatterUserID", antimatterUserID,
 			"error", notifyErr.Error())
 	}
 }
@@ -161,9 +161,9 @@ func (p *Plugin) replaceJiraAccountIds(instanceID types.ID, body string, jiraCli
 
 		jiraMention := "[~" + uname + "]"
 
-		mattermostUserID, err := p.userStore.LoadMattermostUserID(instanceID, jiraUserIDOrName)
+		antimatterUserID, err := p.userStore.LoadAntimatterUserID(instanceID, jiraUserIDOrName)
 		if err == nil {
-			user, userErr := p.client.User.Get(string(mattermostUserID))
+			user, userErr := p.client.User.Get(string(antimatterUserID))
 			if userErr == nil {
 				result = strings.ReplaceAll(result, jiraMention, "@"+user.Username)
 				continue

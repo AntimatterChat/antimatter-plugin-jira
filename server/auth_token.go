@@ -18,12 +18,12 @@ import (
 const authTokenTTL = 15 * time.Minute
 
 type AuthToken struct {
-	MattermostUserID string    `json:"mattermost_user_id,omitempty"`
+	AntimatterUserID string    `json:"mattermost_user_id,omitempty"`
 	Secret           string    `json:"secret,omitempty"`
 	Expires          time.Time `json:"expires,omitempty"`
 }
 
-func (p *Plugin) NewEncodedAuthToken(mattermostUserID, secret string) (returnToken string, returnErr error) {
+func (p *Plugin) NewEncodedAuthToken(antimatterUserID, secret string) (returnToken string, returnErr error) {
 	defer func() {
 		if returnErr == nil {
 			return
@@ -37,7 +37,7 @@ func (p *Plugin) NewEncodedAuthToken(mattermostUserID, secret string) (returnTok
 	}
 
 	t := AuthToken{
-		MattermostUserID: mattermostUserID,
+		AntimatterUserID: antimatterUserID,
 		Secret:           secret,
 		Expires:          time.Now().Add(authTokenTTL),
 	}
@@ -55,7 +55,7 @@ func (p *Plugin) NewEncodedAuthToken(mattermostUserID, secret string) (returnTok
 	return encode(encrypted), nil
 }
 
-func (p *Plugin) ParseAuthToken(encoded string) (mattermostUserID, tokenSecret string, returnErr error) {
+func (p *Plugin) ParseAuthToken(encoded string) (antimatterUserID, tokenSecret string, returnErr error) {
 	defer func() {
 		if returnErr == nil {
 			return
@@ -95,7 +95,7 @@ func (p *Plugin) ParseAuthToken(encoded string) (mattermostUserID, tokenSecret s
 		return "", "", err
 	}
 
-	return t.MattermostUserID, t.Secret, nil
+	return t.AntimatterUserID, t.Secret, nil
 }
 
 func encode(encrypted []byte) string {

@@ -69,30 +69,30 @@ func (m *mockUserStoreForTokenExpiry) LoadUser(id types.ID) (*User, error) {
 	return args.Get(0).(*User), args.Error(1)
 }
 
-func (m *mockUserStoreForTokenExpiry) LoadConnection(instanceID, mattermostUserID types.ID) (*Connection, error) {
-	args := m.Called(instanceID, mattermostUserID)
+func (m *mockUserStoreForTokenExpiry) LoadConnection(instanceID, antimatterUserID types.ID) (*Connection, error) {
+	args := m.Called(instanceID, antimatterUserID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*Connection), args.Error(1)
 }
 
-func (m *mockUserStoreForTokenExpiry) DeleteConnection(instanceID, mattermostUserID types.ID) error {
-	args := m.Called(instanceID, mattermostUserID)
+func (m *mockUserStoreForTokenExpiry) DeleteConnection(instanceID, antimatterUserID types.ID) error {
+	args := m.Called(instanceID, antimatterUserID)
 	return args.Error(0)
 }
 
 func (m *mockUserStoreForTokenExpiry) StoreConnection(types.ID, types.ID, *Connection) error {
 	return nil
 }
-func (m *mockUserStoreForTokenExpiry) LoadMattermostUserID(types.ID, string) (types.ID, error) {
+func (m *mockUserStoreForTokenExpiry) LoadAntimatterUserID(types.ID, string) (types.ID, error) {
 	return "", nil
 }
 func (m *mockUserStoreForTokenExpiry) CountUsers() (int, error)         { return 0, nil }
 func (m *mockUserStoreForTokenExpiry) MapUsers(func(*User) error) error { return nil }
 
 func TestDisconnectUserDueToExpiredToken(t *testing.T) {
-	testMattermostUserID := types.ID("test-mm-user-id")
+	testAntimatterUserID := types.ID("test-mm-user-id")
 	testInstanceID := types.ID("https://test-instance.atlassian.net")
 	testChannelID := "test-channel-id"
 	testBotUserID := "test-bot-user-id"
@@ -106,11 +106,11 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 			setupMocks: func(api *plugintest.API, userStore *mockUserStoreForTokenExpiry, instanceStore *mockInstanceStoreWithLoadInstances) {
 				api.On("KVSetWithOptions", mock.AnythingOfType("string"), []byte("1"), mock.Anything).Return(true, (*model.AppError)(nil)).Once()
 
-				user := NewUser(testMattermostUserID)
+				user := NewUser(testAntimatterUserID)
 				user.ConnectedInstances = NewInstances()
 				user.ConnectedInstances.Set(&InstanceCommon{InstanceID: testInstanceID})
 
-				userStore.On("LoadUser", testMattermostUserID).Return(user, nil).Once()
+				userStore.On("LoadUser", testAntimatterUserID).Return(user, nil).Once()
 
 				mockInstance := &testInstance{
 					InstanceCommon: InstanceCommon{
@@ -120,10 +120,10 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 				instanceStore.On("LoadInstance", testInstanceID).Return(mockInstance, nil).Once()
 
 				connection := &Connection{
-					MattermostUserID: testMattermostUserID,
+					AntimatterUserID: testAntimatterUserID,
 				}
-				userStore.On("LoadConnection", testInstanceID, testMattermostUserID).Return(connection, nil).Once()
-				userStore.On("DeleteConnection", testInstanceID, testMattermostUserID).Return(nil).Once()
+				userStore.On("LoadConnection", testInstanceID, testAntimatterUserID).Return(connection, nil).Once()
+				userStore.On("DeleteConnection", testInstanceID, testAntimatterUserID).Return(nil).Once()
 				userStore.On("StoreUser", mock.AnythingOfType("*main.User")).Return(nil).Once()
 
 				instances := NewInstances()
@@ -132,11 +132,11 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 				instanceStore.On("LoadInstances").Return(instances, nil).Twice()
 
 				api.On("PublishWebSocketEvent", "disconnect", mock.Anything, mock.MatchedBy(func(b *model.WebsocketBroadcast) bool {
-					return b.UserId == testMattermostUserID.String()
+					return b.UserId == testAntimatterUserID.String()
 				})).Return().Once()
 
 				// GetDirectChannel called twice, once for DM subscription cleanup, once for DM notification
-				api.On("GetDirectChannel", testMattermostUserID.String(), testBotUserID).Return(&model.Channel{
+				api.On("GetDirectChannel", testAntimatterUserID.String(), testBotUserID).Return(&model.Channel{
 					Id: testChannelID,
 				}, nil)
 
@@ -155,9 +155,9 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 			setupMocks: func(api *plugintest.API, userStore *mockUserStoreForTokenExpiry, instanceStore *mockInstanceStoreWithLoadInstances) {
 				api.On("KVSetWithOptions", mock.AnythingOfType("string"), []byte("1"), mock.Anything).Return(true, (*model.AppError)(nil)).Once()
 
-				userStore.On("LoadUser", testMattermostUserID).Return(nil, errors.New("transient kv failure")).Once()
+				userStore.On("LoadUser", testAntimatterUserID).Return(nil, errors.New("transient kv failure")).Once()
 
-				api.On("GetDirectChannel", testMattermostUserID.String(), testBotUserID).Return(&model.Channel{
+				api.On("GetDirectChannel", testAntimatterUserID.String(), testBotUserID).Return(&model.Channel{
 					Id: testChannelID,
 				}, nil).Once()
 
@@ -168,7 +168,7 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 				})).Return(&model.Post{}, nil).Once()
 
 				api.On("LogWarn", "Failed to disconnect user after token expiry",
-					"mattermostUserID", testMattermostUserID,
+					"antimatterUserID", testAntimatterUserID,
 					"instanceID", testInstanceID,
 					"error", mock.Anything).Return().Once()
 			},
@@ -178,19 +178,19 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 			setupMocks: func(api *plugintest.API, userStore *mockUserStoreForTokenExpiry, instanceStore *mockInstanceStoreWithLoadInstances) {
 				api.On("KVSetWithOptions", mock.AnythingOfType("string"), []byte("1"), mock.Anything).Return(true, (*model.AppError)(nil)).Once()
 
-				userStore.On("LoadUser", testMattermostUserID).Return(nil, errors.New("transient kv failure")).Once()
+				userStore.On("LoadUser", testAntimatterUserID).Return(nil, errors.New("transient kv failure")).Once()
 
-				api.On("GetDirectChannel", testMattermostUserID.String(), testBotUserID).Return(nil, &model.AppError{
+				api.On("GetDirectChannel", testAntimatterUserID.String(), testBotUserID).Return(nil, &model.AppError{
 					Message: "channel not found",
 				}).Once()
 
 				api.On("LogWarn", "Failed to disconnect user after token expiry",
-					"mattermostUserID", testMattermostUserID,
+					"antimatterUserID", testAntimatterUserID,
 					"instanceID", testInstanceID,
 					"error", mock.Anything).Return().Once()
 
 				api.On("LogWarn", "Failed to send token expiry notification to user after disconnect failure",
-					"mattermostUserID", testMattermostUserID,
+					"antimatterUserID", testAntimatterUserID,
 					"error", mock.Anything).Return().Once()
 			},
 		},
@@ -216,7 +216,7 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 			})
 
 			tt.setupMocks(api, userStore, instanceStore)
-			p.disconnectUserDueToExpiredToken(testMattermostUserID, testInstanceID)
+			p.disconnectUserDueToExpiredToken(testAntimatterUserID, testInstanceID)
 
 			api.AssertExpectations(t)
 			userStore.AssertExpectations(t)
@@ -226,7 +226,7 @@ func TestDisconnectUserDueToExpiredToken(t *testing.T) {
 }
 
 func TestDisconnectUserDueToExpiredTokenDeduplicatesConcurrentCalls(t *testing.T) {
-	testMattermostUserID := types.ID("test-mm-user-id")
+	testAntimatterUserID := types.ID("test-mm-user-id")
 	testInstanceID := types.ID("https://test-instance.atlassian.net")
 	testChannelID := "test-channel-id"
 	testBotUserID := "test-bot-user-id"
@@ -245,21 +245,21 @@ func TestDisconnectUserDueToExpiredTokenDeduplicatesConcurrentCalls(t *testing.T
 		return false, nil
 	})
 
-	connectedUser := NewUser(testMattermostUserID)
+	connectedUser := NewUser(testAntimatterUserID)
 	connectedUser.ConnectedInstances = NewInstances()
 	connectedUser.ConnectedInstances.Set(&InstanceCommon{InstanceID: testInstanceID})
-	disconnectedUser := NewUser(testMattermostUserID)
+	disconnectedUser := NewUser(testAntimatterUserID)
 	disconnectedUser.ConnectedInstances = NewInstances()
 
-	userStore.On("LoadUser", testMattermostUserID).Return(connectedUser, nil).Once()
-	userStore.On("LoadUser", testMattermostUserID).Return(disconnectedUser, nil)
+	userStore.On("LoadUser", testAntimatterUserID).Return(connectedUser, nil).Once()
+	userStore.On("LoadUser", testAntimatterUserID).Return(disconnectedUser, nil)
 
 	mockInstance := &testInstance{InstanceCommon: InstanceCommon{InstanceID: testInstanceID}}
 	instanceStore.On("LoadInstance", testInstanceID).Return(mockInstance, nil)
 
-	connection := &Connection{MattermostUserID: testMattermostUserID}
-	userStore.On("LoadConnection", testInstanceID, testMattermostUserID).Return(connection, nil).Once()
-	userStore.On("DeleteConnection", testInstanceID, testMattermostUserID).Return(nil).Once()
+	connection := &Connection{AntimatterUserID: testAntimatterUserID}
+	userStore.On("LoadConnection", testInstanceID, testAntimatterUserID).Return(connection, nil).Once()
+	userStore.On("DeleteConnection", testInstanceID, testAntimatterUserID).Return(nil).Once()
 	userStore.On("StoreUser", mock.AnythingOfType("*main.User")).Return(nil).Once()
 
 	instances := NewInstances()
@@ -267,9 +267,9 @@ func TestDisconnectUserDueToExpiredTokenDeduplicatesConcurrentCalls(t *testing.T
 	instanceStore.On("LoadInstances").Return(instances, nil)
 
 	api.On("PublishWebSocketEvent", "disconnect", mock.Anything, mock.MatchedBy(func(b *model.WebsocketBroadcast) bool {
-		return b.UserId == testMattermostUserID.String()
+		return b.UserId == testAntimatterUserID.String()
 	})).Return().Once()
-	api.On("GetDirectChannel", testMattermostUserID.String(), testBotUserID).Return(&model.Channel{Id: testChannelID}, nil)
+	api.On("GetDirectChannel", testAntimatterUserID.String(), testBotUserID).Return(&model.Channel{Id: testChannelID}, nil)
 	api.On("KVGet", mock.AnythingOfType("string")).Return(nil, nil)
 
 	api.On("CreatePost", mock.MatchedBy(func(post *model.Post) bool {
@@ -295,7 +295,7 @@ func TestDisconnectUserDueToExpiredTokenDeduplicatesConcurrentCalls(t *testing.T
 		go func() {
 			defer wg.Done()
 			<-start
-			p.disconnectUserDueToExpiredToken(testMattermostUserID, testInstanceID)
+			p.disconnectUserDueToExpiredToken(testAntimatterUserID, testInstanceID)
 		}()
 	}
 	close(start)
@@ -336,7 +336,7 @@ func TestParseJIRAUsernamesFromText(t *testing.T) {
 }
 
 type mockUserStoreForUtils struct {
-	mattermostUserID types.ID
+	antimatterUserID types.ID
 	err              error
 }
 
@@ -356,8 +356,8 @@ func (m mockUserStoreForUtils) LoadConnection(types.ID, types.ID) (*Connection, 
 	return nil, nil
 }
 
-func (m mockUserStoreForUtils) LoadMattermostUserID(instanceID types.ID, jiraUsername string) (types.ID, error) {
-	return m.mattermostUserID, m.err
+func (m mockUserStoreForUtils) LoadAntimatterUserID(instanceID types.ID, jiraUsername string) (types.ID, error) {
+	return m.antimatterUserID, m.err
 }
 
 func (m mockUserStoreForUtils) DeleteConnection(types.ID, types.ID) error {
@@ -501,10 +501,10 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 		name             string
 		body             string
 		expectedResult   string
-		mattermostUserID types.ID
+		antimatterUserID types.ID
 		loadUserErr      error
-		mmUser           *model.User
-		mmUserErr        *model.AppError
+		amUser           *model.User
+		amUserErr        *model.AppError
 		instanceType     InstanceType
 		jiraClient       func() *mockJiraClient
 	}{
@@ -512,24 +512,24 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			name:             "no mentions in text",
 			body:             "Hello world, this is a test message",
 			expectedResult:   "Hello world, this is a test message",
-			mattermostUserID: "",
+			antimatterUserID: "",
 			loadUserErr:      nil,
 		},
 		{
 			name:             "mention replaced with mattermost username",
 			body:             "Hello [~accountid:123456789], please review",
 			expectedResult:   "Hello @testuser, please review",
-			mattermostUserID: "mm-user-id",
+			antimatterUserID: "mm-user-id",
 			loadUserErr:      nil,
 			instanceType:     CloudOAuthInstanceType,
-			mmUser:           &model.User{Username: "testuser"},
-			mmUserErr:        nil,
+			amUser:           &model.User{Username: "testuser"},
+			amUserErr:        nil,
 		},
 		{
 			name:             "cloud - mention falls back to jira display name when mm user not found",
 			body:             "Hello [~accountid:123456789], please review",
 			expectedResult:   "Hello John Doe, please review",
-			mattermostUserID: "",
+			antimatterUserID: "",
 			loadUserErr:      errNotFound,
 			instanceType:     CloudOAuthInstanceType,
 			jiraClient: func() *mockJiraClient {
@@ -542,7 +542,7 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			name:             "cloud - mention falls back to raw id when jira lookup also fails",
 			body:             "Hello [~accountid:123456789], please review",
 			expectedResult:   "Hello 123456789, please review",
-			mattermostUserID: "",
+			antimatterUserID: "",
 			loadUserErr:      errNotFound,
 			instanceType:     CloudOAuthInstanceType,
 			jiraClient: func() *mockJiraClient {
@@ -555,7 +555,7 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			name:             "mention falls back to raw id when no jira client provided",
 			body:             "Hello [~accountid:123456789], please review",
 			expectedResult:   "Hello 123456789, please review",
-			mattermostUserID: "",
+			antimatterUserID: "",
 			loadUserErr:      errNotFound,
 			instanceType:     CloudOAuthInstanceType,
 		},
@@ -563,7 +563,7 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			name:             "cloud - multiple mentions with jira display name fallback",
 			body:             "Hi [~accountid:user1], please check with [~accountid:user2]",
 			expectedResult:   "Hi Alice, please check with Bob",
-			mattermostUserID: "",
+			antimatterUserID: "",
 			loadUserErr:      errNotFound,
 			instanceType:     CloudOAuthInstanceType,
 			jiraClient: func() *mockJiraClient {
@@ -577,16 +577,16 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			name:             "legacy username format replaced with mattermost username",
 			body:             "Hello [~jirauser], please review",
 			expectedResult:   "Hello @testuser, please review",
-			mattermostUserID: "mm-user-id",
+			antimatterUserID: "mm-user-id",
 			loadUserErr:      nil,
-			mmUser:           &model.User{Username: "testuser"},
-			mmUserErr:        nil,
+			amUser:           &model.User{Username: "testuser"},
+			amUserErr:        nil,
 		},
 		{
 			name:             "server - legacy username format falls back to jira display name",
 			body:             "Hello [~jirauser], please review",
 			expectedResult:   "Hello Jane Smith, please review",
-			mattermostUserID: "",
+			antimatterUserID: "",
 			loadUserErr:      errNotFound,
 			instanceType:     ServerInstanceType,
 			jiraClient: func() *mockJiraClient {
@@ -605,17 +605,17 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			api.On("LogWarn", mockAnythingOfTypeBatch("string", 3)...).Return().Maybe()
 			api.On("LogWarn", mockAnythingOfTypeBatch("string", 5)...).Return().Maybe()
 
-			if tt.mmUser != nil {
-				api.On("GetUser", string(tt.mattermostUserID)).Return(tt.mmUser, tt.mmUserErr)
-			} else if tt.mattermostUserID != "" {
-				api.On("GetUser", string(tt.mattermostUserID)).Return(nil, model.NewAppError("", "", nil, "", http.StatusNotFound))
+			if tt.amUser != nil {
+				api.On("GetUser", string(tt.antimatterUserID)).Return(tt.amUser, tt.amUserErr)
+			} else if tt.antimatterUserID != "" {
+				api.On("GetUser", string(tt.antimatterUserID)).Return(nil, model.NewAppError("", "", nil, "", http.StatusNotFound))
 			}
 
 			p := &Plugin{}
 			p.SetAPI(api)
 			p.client = pluginapi.NewClient(api, p.Driver)
 			p.userStore = mockUserStoreForUtils{
-				mattermostUserID: tt.mattermostUserID,
+				antimatterUserID: tt.antimatterUserID,
 				err:              tt.loadUserErr,
 			}
 

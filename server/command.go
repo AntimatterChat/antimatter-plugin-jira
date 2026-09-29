@@ -668,7 +668,7 @@ func executeSettings(p *Plugin, c *plugin.Context, header *model.CommandArgs, ar
 		return p.responsef(header, "Failed to load your connection to Jira. Error: %v.", err)
 	}
 
-	conn, err := p.userStore.LoadConnection(instance.GetID(), user.MattermostUserID)
+	conn, err := p.userStore.LoadConnection(instance.GetID(), user.AntimatterUserID)
 	if err != nil {
 		return p.responsef(header, "Your username is not connected to Jira. Please type `jira connect`. Error: %v.", err)
 	}
@@ -684,7 +684,7 @@ func executeSettings(p *Plugin, c *plugin.Context, header *model.CommandArgs, ar
 		}
 		return p.responsef(header, "Please connect to Jira account using the command `/jira connect`")
 	case "notifications":
-		return p.settingsNotifications(header, instance.GetID(), user.MattermostUserID, conn, args)
+		return p.settingsNotifications(header, instance.GetID(), user.AntimatterUserID, conn, args)
 	default:
 		return p.responsef(header, "Unknown setting.")
 	}
@@ -707,7 +707,7 @@ func executeView(p *Plugin, c *plugin.Context, header *model.CommandArgs, args .
 
 	issueID := args[0]
 
-	conn, err := p.userStore.LoadConnection(instance.GetID(), user.MattermostUserID)
+	conn, err := p.userStore.LoadConnection(instance.GetID(), user.AntimatterUserID)
 	if err != nil {
 		// TODO: try to retrieve the issue anonymously
 		return p.responsef(header, "Your username is not connected to Jira. Please type `jira connect`.")
@@ -950,7 +950,7 @@ func executeInstanceInstallServer(p *Plugin, c *plugin.Context, header *model.Co
 	return p.respondCommandTemplate(header, "/command/install_server.md", map[string]string{
 		"JiraURL":       jiraURL,
 		"PluginURL":     p.GetPluginURL(),
-		"MattermostKey": instance.GetMattermostKey(),
+		"MattermostKey": instance.GetAntimatterKey(),
 		"PublicKey":     pkey,
 	})
 }
@@ -1044,16 +1044,16 @@ func executeTransition(p *Plugin, c *plugin.Context, header *model.CommandArgs, 
 	}
 	issueKey := strings.ToUpper(args[0])
 	toState := strings.Join(args[1:], " ")
-	mattermostUserID := types.ID(header.UserId)
+	antimatterUserID := types.ID(header.UserId)
 
-	_, instanceID, err := p.ResolveUserInstanceURL(mattermostUserID, instanceURL)
+	_, instanceID, err := p.ResolveUserInstanceURL(antimatterUserID, instanceURL)
 	if err != nil {
 		return p.responsef(header, "Failed to identify Jira instance %s. Error: %v.", instanceURL, err)
 	}
 
 	msg, err := p.TransitionIssue(&InTransitionIssue{
 		InstanceID:       instanceID,
-		mattermostUserID: mattermostUserID,
+		antimatterUserID: antimatterUserID,
 		IssueKey:         issueKey,
 		ToState:          toState,
 	})
@@ -1068,7 +1068,7 @@ func executeMe(p *Plugin, c *plugin.Context, header *model.CommandArgs, args ...
 	if len(args) != 0 {
 		return p.help(header)
 	}
-	mattermostUserID := types.ID(header.UserId)
+	antimatterUserID := types.ID(header.UserId)
 	bullet := func(cond bool, k string, v interface{}) string {
 		if !cond {
 			return ""
@@ -1098,13 +1098,13 @@ func executeMe(p *Plugin, c *plugin.Context, header *model.CommandArgs, args ...
 		return ""
 	}
 
-	info, err := p.GetUserInfo(mattermostUserID, nil)
+	info, err := p.GetUserInfo(antimatterUserID, nil)
 	if err != nil {
 		return p.response(header, err.Error())
 	}
 
 	resp := sbullet("Mattermost site URL", p.GetSiteURL())
-	resp += sbullet("Mattermost user ID", fmt.Sprintf("`%s`", mattermostUserID))
+	resp += sbullet("Mattermost user ID", fmt.Sprintf("`%s`", antimatterUserID))
 
 	switch {
 	case info.IsConnected:
@@ -1117,7 +1117,7 @@ func executeMe(p *Plugin, c *plugin.Context, header *model.CommandArgs, args ...
 
 	if info.IsConnected {
 		for _, instanceID := range info.User.ConnectedInstances.IDs() {
-			connection, err := p.userStore.LoadConnection(instanceID, mattermostUserID)
+			connection, err := p.userStore.LoadConnection(instanceID, antimatterUserID)
 			if err != nil {
 				return p.response(header, err.Error())
 			}
@@ -1147,7 +1147,7 @@ func executeMe(p *Plugin, c *plugin.Context, header *model.CommandArgs, args ...
 			if info.IsConnected && info.User.ConnectedInstances.Contains(instanceID) {
 				continue
 			}
-			connection, err := p.userStore.LoadConnection(instanceID, mattermostUserID)
+			connection, err := p.userStore.LoadConnection(instanceID, antimatterUserID)
 			if err != nil {
 				if errors.Cause(err) == kvstore.ErrNotFound {
 					continue
@@ -1340,13 +1340,13 @@ func (p *Plugin) parseCommandFlagInstanceURL(args []string) (string, []string, e
 	return instanceURL, remaining, nil
 }
 
-func (p *Plugin) loadFlagUserInstance(mattermostUserID string, args []string) (*User, Instance, []string, error) {
+func (p *Plugin) loadFlagUserInstance(antimatterUserID string, args []string) (*User, Instance, []string, error) {
 	instanceURL, args, err := p.parseCommandFlagInstanceURL(args)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	user, instance, err := p.LoadUserInstance(types.ID(mattermostUserID), instanceURL)
+	user, instance, err := p.LoadUserInstance(types.ID(antimatterUserID), instanceURL)
 	if err != nil {
 		return nil, nil, nil, err
 	}

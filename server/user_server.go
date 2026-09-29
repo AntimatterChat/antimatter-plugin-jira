@@ -58,16 +58,16 @@ func (p *Plugin) httpOAuth1aComplete(w http.ResponseWriter, r *http.Request, ins
 			errors.WithMessage(err, "failed to parse callback request from Jira")
 	}
 
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
-	mmuser, appErr := p.client.User.Get(mattermostUserID)
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
+	amuser, appErr := p.client.User.Get(antimatterUserID)
 	if appErr != nil {
 		return http.StatusInternalServerError,
-			errors.WithMessage(err, "failed to load user "+mattermostUserID)
+			errors.WithMessage(err, "failed to load user "+antimatterUserID)
 	}
 
-	oauthTmpCredentials, err := p.otsStore.OneTimeLoadOauth1aTemporaryCredentials(mattermostUserID)
+	oauthTmpCredentials, err := p.otsStore.OneTimeLoadOauth1aTemporaryCredentials(antimatterUserID)
 	if err != nil || oauthTmpCredentials == nil || oauthTmpCredentials.Token == "" {
-		return http.StatusInternalServerError, errors.WithMessage(err, "failed to get temporary credentials for "+mattermostUserID)
+		return http.StatusInternalServerError, errors.WithMessage(err, "failed to get temporary credentials for "+antimatterUserID)
 	}
 
 	if oauthTmpCredentials.Token != requestToken {
@@ -110,29 +110,29 @@ func (p *Plugin) httpOAuth1aComplete(w http.ResponseWriter, r *http.Request, ins
 		},
 	}
 
-	err = p.connectUser(instance, types.ID(mattermostUserID), connection)
+	err = p.connectUser(instance, types.ID(antimatterUserID), connection)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	return p.respondTemplate(w, r, ContentTypeHTML, struct {
-		MattermostDisplayName string
+		AntimatterDisplayName string
 		JiraDisplayName       string
 		RevokeURL             string
 	}{
 		JiraDisplayName:       juser.DisplayName + " (" + juser.Name + ")",
-		MattermostDisplayName: mmuser.GetDisplayName(model.ShowNicknameFullName),
+		AntimatterDisplayName: amuser.GetDisplayName(model.ShowNicknameFullName),
 		RevokeURL:             p.CreateFullURLPath(instancePath(routeUserDisconnect, instance.GetID())),
 	})
 }
 
 func (p *Plugin) httpOAuth1aDisconnect(w http.ResponseWriter, r *http.Request, instanceID types.ID) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
-	conn, err := p.DisconnectUser(instanceID.String(), types.ID(mattermostUserID))
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
+	conn, err := p.DisconnectUser(instanceID.String(), types.ID(antimatterUserID))
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
-	if _, err := p.CreateBotDMtoMMUserID(mattermostUserID, "You have successfully disconnected your Jira account (**%s**).", conn.DisplayName); err != nil {
+	if _, err := p.CreateBotDMtoMMUserID(antimatterUserID, "You have successfully disconnected your Jira account (**%s**).", conn.DisplayName); err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
 

@@ -72,12 +72,12 @@
 				Your Jira account is now connected with Mattermost
 			</h3>
 			<div class="accounts-container">
-				<div>Mattermost account: {{ .MattermostDisplayName }}</div>
+				<div>Mattermost account: {{ .AntimatterDisplayName }}</div>
 				<div>Jira account: {{ .JiraDisplayName }}</div>
 			</div>
 			<form id="user_connect" name="user_connect" action="{{ .DisconnectSubmitURL }}">
 				<input type="hidden" id="{{ .ArgJiraJWT }}" name="{{ .ArgJiraJWT}}" value="none"/>
-				<input type="hidden" id="{{ .ArgMMToken }}" name="{{ .ArgMMToken}}" value="{{ .MMToken }}"/>
+				<input type="hidden" id="{{ .ArgAMToken }}" name="{{ .ArgAMToken}}" value="{{ .AMToken }}"/>
 				<input type="submit" class="btn btn-link" value="Disconnect"/>
 			</form>
 		</div>

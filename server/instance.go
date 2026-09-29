@@ -21,7 +21,7 @@ const (
 type Instance interface {
 	GetClient(*Connection) (Client, error)
 	GetDisplayDetails() map[string]string
-	GetUserConnectURL(mattermostUserID string) (string, *http.Cookie, error)
+	GetUserConnectURL(antimatterUserID string) (string, *http.Cookie, error)
 	GetManageAppsURL() string
 	GetManageWebhooksURL() string
 	GetURL() string

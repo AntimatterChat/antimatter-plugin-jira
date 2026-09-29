@@ -1939,7 +1939,7 @@ func TestRemoveSubscriptionsForChannel(t *testing.T) {
 
 func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 	botUserID := "botuser___________________"
-	mattermostUserID := "mmuser____________________"
+	antimatterUserID := "mmuser____________________"
 	otherMemberID := "othermember________________"
 	dmChannelID := "dmchannelaaaaaaaaaaaaaaaa"
 	gmChannelID := "gmchannelbbbbbbbbbbbbbbbb"
@@ -1986,10 +1986,10 @@ func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 
 		api.On("GetChannel", dmChannelID).Return(&model.Channel{Id: dmChannelID, Type: model.ChannelTypeDirect}, nil)
 		api.On("GetChannel", otherChannelID).Return(&model.Channel{Id: otherChannelID, Type: model.ChannelTypeOpen}, nil)
-		api.On("GetChannelMember", dmChannelID, mattermostUserID).Return(&model.ChannelMember{ChannelId: dmChannelID, UserId: mattermostUserID}, nil)
+		api.On("GetChannelMember", dmChannelID, antimatterUserID).Return(&model.ChannelMember{ChannelId: dmChannelID, UserId: antimatterUserID}, nil)
 		api.On("GetChannelMembers", dmChannelID, 0, maxDMGMChannelMembers).Return(model.ChannelMembers{
 			{UserId: botUserID},
-			{UserId: mattermostUserID},
+			{UserId: antimatterUserID},
 		}, nil)
 
 		api.On("KVSetWithOptions", testSubKey, mock.MatchedBy(func(data []byte) bool {
@@ -2002,7 +2002,7 @@ func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 			return !hasDMSub && hasOtherSub && len(savedSubs.Channel.ByID) == 1
 		}), mock.AnythingOfType("model.PluginKVSetOptions")).Return(true, nil)
 
-		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), mattermostUserID)
+		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), antimatterUserID)
 
 		api.AssertExpectations(t)
 	})
@@ -2020,14 +2020,14 @@ func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 		api.On("KVGet", testSubKey).Return(existingBytes, nil)
 
 		api.On("GetChannel", gmChannelID).Return(&model.Channel{Id: gmChannelID, Type: model.ChannelTypeGroup}, nil)
-		api.On("GetChannelMember", gmChannelID, mattermostUserID).Return(&model.ChannelMember{ChannelId: gmChannelID, UserId: mattermostUserID}, nil)
+		api.On("GetChannelMember", gmChannelID, antimatterUserID).Return(&model.ChannelMember{ChannelId: gmChannelID, UserId: antimatterUserID}, nil)
 		api.On("GetChannelMembers", gmChannelID, 0, maxDMGMChannelMembers).Return(model.ChannelMembers{
 			{UserId: botUserID},
-			{UserId: mattermostUserID},
+			{UserId: antimatterUserID},
 			{UserId: otherMemberID},
 		}, nil)
 
-		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), mattermostUserID)
+		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), antimatterUserID)
 
 		api.AssertNotCalled(t, "KVSetWithOptions", mock.Anything, mock.Anything, mock.Anything)
 	})
@@ -2043,9 +2043,9 @@ func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 		api.On("KVGet", testSubKey).Return(existingBytes, nil)
 
 		api.On("GetChannel", dmChannelID).Return(&model.Channel{Id: dmChannelID, Type: model.ChannelTypeDirect}, nil)
-		api.On("GetChannelMember", dmChannelID, mattermostUserID).Return(nil, &model.AppError{Message: "not a member"})
+		api.On("GetChannelMember", dmChannelID, antimatterUserID).Return(nil, &model.AppError{Message: "not a member"})
 
-		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), mattermostUserID)
+		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), antimatterUserID)
 
 		api.AssertNotCalled(t, "GetChannelMembers", mock.Anything, mock.Anything, mock.Anything)
 		api.AssertNotCalled(t, "KVSetWithOptions", mock.Anything, mock.Anything, mock.Anything)
@@ -2055,7 +2055,7 @@ func TestCleanupDMSubscriptionsOnDisconnect(t *testing.T) {
 		api, p := setup()
 		api.On("KVGet", testSubKey).Return(nil, nil)
 
-		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), mattermostUserID)
+		p.cleanupDMSubscriptionsOnDisconnect(testInstance1.GetID(), antimatterUserID)
 
 		api.AssertNotCalled(t, "GetChannel", mock.Anything)
 	})

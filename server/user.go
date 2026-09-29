@@ -22,7 +22,7 @@ import (
 
 type User struct {
 	PluginVersion      string
-	MattermostUserID   types.ID   `json:"mattermost_user_id"`
+	AntimatterUserID   types.ID   `json:"mattermost_user_id"`
 	ConnectedInstances *Instances `json:"connected_instances,omitempty"`
 	DefaultInstanceID  types.ID   `json:"default_instance_id,omitempty"`
 }
@@ -35,7 +35,7 @@ type Connection struct {
 	OAuth2Token        *oauth2.Token `json:",omitempty"`
 	Settings           *ConnectionSettings
 	SavedFieldValues   *SavedFieldValues `json:"saved_field_values,omitempty"`
-	MattermostUserID   types.ID          `json:"mattermost_user_id"`
+	AntimatterUserID   types.ID          `json:"mattermost_user_id"`
 }
 
 type SavedFieldValues struct {
@@ -81,15 +81,15 @@ func (s *ConnectionSettings) String() string {
 	return fmt.Sprintf("\t- %s \n\t- %s \n\t- %s \n\t- %s", assigneeNotifications, mentionNotifications, reporterNotifications, watchingNotifications)
 }
 
-func NewUser(mattermostUserID types.ID) *User {
+func NewUser(antimatterUserID types.ID) *User {
 	return &User{
-		MattermostUserID:   mattermostUserID,
+		AntimatterUserID:   antimatterUserID,
 		ConnectedInstances: NewInstances(),
 	}
 }
 
 func (p *Plugin) httpUserConnect(w http.ResponseWriter, r *http.Request, instanceID types.ID) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	instance, err := p.instanceStore.LoadInstance(instanceID)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
@@ -97,13 +97,13 @@ func (p *Plugin) httpUserConnect(w http.ResponseWriter, r *http.Request, instanc
 
 	// Users shouldn't be able to make multiple connections.
 	// TODO <> this block needs to be updated. Though idk if this route will still get called?
-	connection, err := p.userStore.LoadConnection(instance.GetID(), types.ID(mattermostUserID))
+	connection, err := p.userStore.LoadConnection(instance.GetID(), types.ID(antimatterUserID))
 	if err == nil && len(connection.JiraAccountID()) != 0 {
 		return respondErr(w, http.StatusBadRequest,
 			errors.New("you already have a Jira account linked to your Mattermost account. Please use `/jira disconnect` to disconnect"))
 	}
 
-	redirectURL, cookie, err := instance.GetUserConnectURL(mattermostUserID)
+	redirectURL, cookie, err := instance.GetUserConnectURL(antimatterUserID)
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -117,7 +117,7 @@ func (p *Plugin) httpUserConnect(w http.ResponseWriter, r *http.Request, instanc
 }
 
 func (p *Plugin) httpUserDisconnect(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	disconnectPayload := &struct {
 		InstanceID string `json:"instance_id"`
 	}{}
@@ -134,7 +134,7 @@ func (p *Plugin) httpUserDisconnect(w http.ResponseWriter, r *http.Request) (int
 			errors.WithMessage(err, "failed to unmarshal disconnect payload"))
 	}
 
-	_, err = p.DisconnectUser(disconnectPayload.InstanceID, types.ID(mattermostUserID))
+	_, err = p.DisconnectUser(disconnectPayload.InstanceID, types.ID(antimatterUserID))
 	if errors.Cause(err) == kvstore.ErrNotFound {
 		return respondErr(w, http.StatusNotFound,
 			errors.Errorf(
@@ -156,10 +156,10 @@ func (p *Plugin) httpUserDisconnect(w http.ResponseWriter, r *http.Request) (int
 
 // TODO succinctly document the difference between start and connect
 func (p *Plugin) httpUserStart(w http.ResponseWriter, r *http.Request, instanceID types.ID) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 
 	// If user is already connected we show them the docs
-	connection, err := p.userStore.LoadConnection(instanceID, types.ID(mattermostUserID))
+	connection, err := p.userStore.LoadConnection(instanceID, types.ID(antimatterUserID))
 	if err == nil && len(connection.JiraAccountID()) != 0 {
 		http.Redirect(w, r, PluginRepo, http.StatusSeeOther)
 		return http.StatusSeeOther, nil
@@ -171,14 +171,14 @@ func (p *Plugin) httpUserStart(w http.ResponseWriter, r *http.Request, instanceI
 
 func (user *User) AsConfigMap() map[string]interface{} {
 	return map[string]interface{}{
-		"mattermost_user_id":  user.MattermostUserID.String(),
+		"mattermost_user_id":  user.AntimatterUserID.String(),
 		"connected_instances": user.ConnectedInstances.AsConfigMap(),
 		"default_instance_id": user.DefaultInstanceID.String(),
 	}
 }
 
-func (p *Plugin) UpdateUserDefaults(mattermostUserID, instanceID types.ID, savedValues *SavedFieldValues) {
-	user, err := p.userStore.LoadUser(mattermostUserID)
+func (p *Plugin) UpdateUserDefaults(antimatterUserID, instanceID types.ID, savedValues *SavedFieldValues) {
+	user, err := p.userStore.LoadUser(antimatterUserID)
 	if err != nil {
 		return
 	}
@@ -186,7 +186,7 @@ func (p *Plugin) UpdateUserDefaults(mattermostUserID, instanceID types.ID, saved
 		return
 	}
 
-	connection, err := p.userStore.LoadConnection(instanceID, user.MattermostUserID)
+	connection, err := p.userStore.LoadConnection(instanceID, user.AntimatterUserID)
 	if err != nil {
 		return
 	}
@@ -200,19 +200,19 @@ func (p *Plugin) UpdateUserDefaults(mattermostUserID, instanceID types.ID, saved
 
 	if savedValues != nil {
 		connection.SavedFieldValues = savedValues
-		err = p.userStore.StoreConnection(instanceID, user.MattermostUserID, connection)
+		err = p.userStore.StoreConnection(instanceID, user.AntimatterUserID, connection)
 		if err != nil {
 			return
 		}
 	}
 
-	info, err := p.GetUserInfo(mattermostUserID, user)
+	info, err := p.GetUserInfo(antimatterUserID, user)
 	if err != nil {
 		return
 	}
 
 	p.client.Frontend.PublishWebSocketEvent(websocketEventUpdateDefaults, info.AsConfigMap(),
-		&model.WebsocketBroadcast{UserId: mattermostUserID.String()},
+		&model.WebsocketBroadcast{UserId: antimatterUserID.String()},
 	)
 }
 
@@ -227,17 +227,17 @@ func (p *Plugin) httpGetSettingsInfo(w http.ResponseWriter, r *http.Request) (in
 	})
 }
 
-func (p *Plugin) connectUser(instance Instance, mattermostUserID types.ID, connection *Connection) error {
-	user, err := p.userStore.LoadUser(mattermostUserID)
+func (p *Plugin) connectUser(instance Instance, antimatterUserID types.ID, connection *Connection) error {
+	user, err := p.userStore.LoadUser(antimatterUserID)
 	if err != nil {
 		if errors.Cause(err) != kvstore.ErrNotFound {
 			return err
 		}
-		user = NewUser(mattermostUserID)
+		user = NewUser(antimatterUserID)
 	}
 	user.ConnectedInstances.Set(instance.Common())
 
-	err = p.userStore.StoreConnection(instance.GetID(), mattermostUserID, connection)
+	err = p.userStore.StoreConnection(instance.GetID(), antimatterUserID, connection)
 	if err != nil {
 		return err
 	}
@@ -246,32 +246,32 @@ func (p *Plugin) connectUser(instance Instance, mattermostUserID types.ID, conne
 		return err
 	}
 
-	_ = p.setupFlow.ForUser(string(mattermostUserID)).Go(stepConnected)
+	_ = p.setupFlow.ForUser(string(antimatterUserID)).Go(stepConnected)
 
-	info, err := p.GetUserInfo(mattermostUserID, user)
+	info, err := p.GetUserInfo(antimatterUserID, user)
 	if err != nil {
 		return err
 	}
 
 	p.client.Frontend.PublishWebSocketEvent(websocketEventConnect, info.AsConfigMap(),
-		&model.WebsocketBroadcast{UserId: mattermostUserID.String()},
+		&model.WebsocketBroadcast{UserId: antimatterUserID.String()},
 	)
 
-	p.TrackUserEvent("userConnected", mattermostUserID.String(), nil)
+	p.TrackUserEvent("userConnected", antimatterUserID.String(), nil)
 
 	return nil
 }
 
-func (p *Plugin) DisconnectUser(instanceURL string, mattermostUserID types.ID) (*Connection, error) {
-	user, instance, err := p.LoadUserInstance(mattermostUserID, instanceURL)
+func (p *Plugin) DisconnectUser(instanceURL string, antimatterUserID types.ID) (*Connection, error) {
+	user, instance, err := p.LoadUserInstance(antimatterUserID, instanceURL)
 	if err != nil {
 		return nil, err
 	}
 	return p.disconnectUser(instance, user)
 }
 
-func (p *Plugin) SetDefaultInstance(instanceURL string, mattermostUserID types.ID) error {
-	user, instance, err := p.LoadUserInstance(mattermostUserID, instanceURL)
+func (p *Plugin) SetDefaultInstance(instanceURL string, antimatterUserID types.ID) error {
+	user, instance, err := p.LoadUserInstance(antimatterUserID, instanceURL)
 	if err != nil {
 		return err
 	}
@@ -293,7 +293,7 @@ func (p *Plugin) disconnectUser(instance Instance, user *User) (*Connection, err
 	if !user.ConnectedInstances.Contains(instance.GetID()) {
 		return nil, errors.Wrapf(kvstore.ErrNotFound, "user is not connected to %q", instance.GetID())
 	}
-	conn, err := p.userStore.LoadConnection(instance.GetID(), user.MattermostUserID)
+	conn, err := p.userStore.LoadConnection(instance.GetID(), user.AntimatterUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +304,7 @@ func (p *Plugin) disconnectUser(instance Instance, user *User) (*Connection, err
 
 	user.ConnectedInstances.Delete(instance.GetID())
 
-	err = p.userStore.DeleteConnection(instance.GetID(), user.MattermostUserID)
+	err = p.userStore.DeleteConnection(instance.GetID(), user.AntimatterUserID)
 	if err != nil && errors.Cause(err) != kvstore.ErrNotFound {
 		return nil, err
 	}
@@ -313,16 +313,16 @@ func (p *Plugin) disconnectUser(instance Instance, user *User) (*Connection, err
 		return nil, err
 	}
 
-	p.cleanupDMSubscriptionsOnDisconnect(instance.GetID(), user.MattermostUserID.String())
+	p.cleanupDMSubscriptionsOnDisconnect(instance.GetID(), user.AntimatterUserID.String())
 
-	info, err := p.GetUserInfo(user.MattermostUserID, user)
+	info, err := p.GetUserInfo(user.AntimatterUserID, user)
 	if err != nil {
 		return nil, err
 	}
 	p.client.Frontend.PublishWebSocketEvent(websocketEventDisconnect, info.AsConfigMap(),
-		&model.WebsocketBroadcast{UserId: user.MattermostUserID.String()})
+		&model.WebsocketBroadcast{UserId: user.AntimatterUserID.String()})
 
-	p.TrackUserEvent("userDisconnected", user.MattermostUserID.String(), nil)
+	p.TrackUserEvent("userDisconnected", user.AntimatterUserID.String(), nil)
 
 	return conn, nil
 }

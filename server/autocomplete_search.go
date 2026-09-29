@@ -13,14 +13,14 @@ import (
 )
 
 func (p *Plugin) httpGetAutoCompleteFields(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	instanceID := r.FormValue("instance_id")
 	params := map[string]string{
 		"fieldName":  r.FormValue("fieldName"),
 		"fieldValue": r.FormValue("fieldValue"),
 	}
 
-	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(mattermostUserID))
+	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(antimatterUserID))
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
@@ -48,12 +48,12 @@ func (p *Plugin) httpGetAutoCompleteFields(w http.ResponseWriter, r *http.Reques
 }
 
 func (p *Plugin) httpGetSearchUsers(w http.ResponseWriter, r *http.Request) (int, error) {
-	mattermostUserID := r.Header.Get("Mattermost-User-Id")
+	antimatterUserID := r.Header.Get("Mattermost-User-Id")
 	instanceID := r.FormValue("instance_id")
 	projectKey := r.FormValue("project")
 	userSearch := r.FormValue("q")
 
-	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(mattermostUserID))
+	client, _, _, err := p.getClient(types.ID(instanceID), types.ID(antimatterUserID))
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError, err)
 	}
