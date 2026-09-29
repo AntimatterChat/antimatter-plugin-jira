@@ -22,7 +22,7 @@ const (
 	timeStampFormat = "2006-01-02 15:04:05.000 Z07:00"
 )
 
-// logs fetches the latest 500 log entries from Mattermost,
+// logs fetches the latest 500 log entries from Antimatter,
 // and prints only the ones related to the plugin to stdout.
 func logs(ctx context.Context, client *model.Client4, pluginID string) error {
 	err := checkJSONLogsSetting(ctx, client)
@@ -43,7 +43,7 @@ func logs(ctx context.Context, client *model.Client4, pluginID string) error {
 	return nil
 }
 
-// watchLogs fetches log entries from Mattermost and print them to stdout.
+// watchLogs fetches log entries from Antimatter and print them to stdout.
 // It will return without an error when ctx is canceled.
 func watchLogs(ctx context.Context, client *model.Client4, pluginID string) error {
 	err := checkJSONLogsSetting(ctx, client)
@@ -109,12 +109,12 @@ func checkOldestEntry(logs []string, oldest string) ([]string, string, bool) {
 	}
 }
 
-// fetchLogs fetches log entries from Mattermost
+// fetchLogs fetches log entries from Antimatter
 // and filters them based on pluginID and timestamp.
 func fetchLogs(ctx context.Context, client *model.Client4, page, perPage int, pluginID string, since time.Time) ([]string, error) {
 	logs, _, err := client.GetLogs(ctx, page, perPage)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get logs from Mattermost: %w", err)
+		return nil, fmt.Errorf("failed to get logs from Antimatter: %w", err)
 	}
 
 	logs, err = filterLogEntries(logs, pluginID, since)
@@ -181,7 +181,7 @@ func checkJSONLogsSetting(ctx context.Context, client *model.Client4) error {
 		return fmt.Errorf("failed to fetch config: %w", err)
 	}
 	if cfg.LogSettings.FileJson == nil || !*cfg.LogSettings.FileJson {
-		return errors.New("JSON output for file logs are disabled. Please enable LogSettings.FileJson via the configuration in Mattermost.") //nolint:revive,stylecheck
+		return errors.New("JSON output for file logs are disabled. Please enable LogSettings.FileJson via the configuration in Antimatter.") //nolint:revive,stylecheck
 	}
 
 	return nil

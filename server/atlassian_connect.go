@@ -29,13 +29,13 @@ func (p *Plugin) httpACJSON(w http.ResponseWriter, r *http.Request, instanceID t
 	if isCloud && !ci.Installed && ci.SetupRoutingSecret != "" {
 		if !isOpaqueCloudSetupRoutingID(rawPathID) {
 			return respondErr(w, http.StatusNotFound,
-				errors.New("use the Atlassian Connect descriptor URL from your Mattermost install instructions"))
+				errors.New("use the Atlassian Connect descriptor URL from your Antimatter install instructions"))
 		}
 		// Bind descriptor to this install's secret (must match path segment, not only "some" opaque id).
 		if len(rawPathID) != len(ci.SetupRoutingSecret) ||
 			subtle.ConstantTimeCompare([]byte(rawPathID), []byte(ci.SetupRoutingSecret)) != 1 {
 			return respondErr(w, http.StatusNotFound,
-				errors.New("use the Atlassian Connect descriptor URL from your Mattermost install instructions"))
+				errors.New("use the Atlassian Connect descriptor URL from your Antimatter install instructions"))
 		}
 	}
 
@@ -94,7 +94,7 @@ func (p *Plugin) processACInstalled(w http.ResponseWriter, r *http.Request, rawP
 	}
 	if instance == nil {
 		return respondErr(w, http.StatusNotFound,
-			errors.Errorf("Jira instance %s must first be added to Mattermost", asc.BaseURL))
+			errors.Errorf("Jira instance %s must first be added to Antimatter", asc.BaseURL))
 	}
 	ci, ok := instance.(*cloudInstance)
 	if !ok {

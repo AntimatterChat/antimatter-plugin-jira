@@ -1507,7 +1507,7 @@ func TestGetWatchersWithAPIToken(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/rest/api/3/issue/PROJ-123/watchers", r.URL.Path)
 			assert.Contains(t, r.Header.Get("Authorization"), "Basic ")
-			assert.Contains(t, r.Header.Get("User-Agent"), "Mattermost-Plugin-Jira/")
+			assert.Contains(t, r.Header.Get("User-Agent"), "Antimatter-Plugin-Jira/")
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(watchersPayload) //nolint:errcheck
 		}))

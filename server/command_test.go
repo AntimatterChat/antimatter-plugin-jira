@@ -459,9 +459,9 @@ func TestPlugin_ExecuteCommand_Installation(t *testing.T) {
 			commandArgs:       &model.CommandArgs{Command: "/jira install server https://mmtest.atlassian.net", UserId: mockUserIDSysAdmin},
 			expectedMsgPrefix: "`https://mmtest.atlassian.net` is not a Jira server URL, it refers to Jira Cloud",
 		},
-		"install server instance using mattermost site URL": {
+		"install server instance using antimatter site URL": {
 			commandArgs:       &model.CommandArgs{Command: "/jira install server https://somelink.com", UserId: mockUserIDSysAdmin},
-			expectedMsgPrefix: "https://somelink.com is the Mattermost site URL. Please use your Jira URL",
+			expectedMsgPrefix: "https://somelink.com is the Antimatter site URL. Please use your Jira URL",
 		},
 		"install valid cloud instance": {
 			numInstances:      0,

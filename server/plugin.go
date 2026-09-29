@@ -45,7 +45,7 @@ const (
 	// Move these two to the plugin settings if admins need to adjust them.
 	WebhookMaxProcsPerServer = 20
 	WebhookBufferSize        = 10000
-	PluginRepo               = "https://github.com/mattermost/mattermost-plugin-jira"
+	PluginRepo               = "https://github.com/antimatterchat/antimatter-plugin-jira"
 )
 
 // Every field needs an explicit lowercase json tag: the server stores and
@@ -189,7 +189,7 @@ func isValidUUIDv4(uuid string) bool {
 
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
-	// Load the public configuration fields from the Mattermost server configuration.
+	// Load the public configuration fields from the Antimatter server configuration.
 	ec := externalConfig{}
 	if p.client == nil {
 		p.client = pluginapi.NewClient(p.API, p.Driver)
@@ -379,7 +379,7 @@ func (p *Plugin) OnActivate() error {
 	if ptr != nil {
 		antimatterSiteURL = *ptr
 	} else {
-		return errors.New("please configure the Mattermost server's SiteURL, then restart the plugin.")
+		return errors.New("please configure the Antimatter server's SiteURL, then restart the plugin.")
 	}
 
 	err = p.setDefaultConfiguration()
@@ -599,14 +599,14 @@ func (p *Plugin) errorf(f string, args ...interface{}) {
 func (p *Plugin) CheckSiteURL() error {
 	ustr := p.GetSiteURL()
 	if ustr == "" {
-		return errors.New("Mattermost SITEURL must not be empty.")
+		return errors.New("Antimatter SITEURL must not be empty.")
 	}
 	u, err := url.Parse(ustr)
 	if err != nil {
 		return errors.WithMessage(err, "invalid SITEURL")
 	}
 	if u.Hostname() == "localhost" {
-		return errors.Errorf("Using %s as your Mattermost SiteURL is not permitted, as the URL is not reachable from Jira. If you are using Jira Cloud, please make sure your URL is reachable from the public internet.", ustr)
+		return errors.Errorf("Using %s as your Antimatter SiteURL is not permitted, as the URL is not reachable from Jira. If you are using Jira Cloud, please make sure your URL is reachable from the public internet.", ustr)
 	}
 	return nil
 }

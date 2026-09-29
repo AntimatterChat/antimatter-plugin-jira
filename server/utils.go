@@ -299,7 +299,7 @@ func (p *Plugin) SetAdminAPITokenRequestHeader(req *http.Request) error {
 	encodedAuth := base64.StdEncoding.EncodeToString([]byte(cfg.AdminEmail + ":" + adminAPIToken))
 	req.Header.Set("Authorization", "Basic "+encodedAuth)
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "Mattermost-Plugin-Jira/"+manifest.Version)
+	req.Header.Set("User-Agent", "Antimatter-Plugin-Jira/"+manifest.Version)
 
 	return nil
 }

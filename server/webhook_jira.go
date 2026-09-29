@@ -82,7 +82,7 @@ func (jwh *JiraWebhook) expandIssue(p *Plugin, instanceID types.ID) error {
 						return nil
 					}
 
-					return errors.Wrap(err, "Cannot create subscription posts for this comment as the Jira comment author is not connected to Mattermost.")
+					return errors.Wrap(err, "Cannot create subscription posts for this comment as the Jira comment author is not connected to Antimatter.")
 				}
 
 				// Fetch issue details with bot JWT bot

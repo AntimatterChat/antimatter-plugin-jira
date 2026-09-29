@@ -65,11 +65,11 @@ var jiraCommandHandler = CommandHandler{
 	defaultHandler: executeJiraDefault,
 }
 
-const helpTextHeader = "###### Mattermost Jira Plugin - Slash Command Help\n"
+const helpTextHeader = "###### Antimatter Jira Plugin - Slash Command Help\n"
 
 const commonHelpText = "\n" +
-	"* `/jira connect [jiraURL]` - Connect your Mattermost account to your Jira account\n" +
-	"* `/jira disconnect [jiraURL]` - Disconnect your Mattermost account from your Jira account\n" +
+	"* `/jira connect [jiraURL]` - Connect your Antimatter account to your Jira account\n" +
+	"* `/jira disconnect [jiraURL]` - Disconnect your Antimatter account from your Jira account\n" +
 	"* `/jira [issue] assign [issue-key] [assignee]` - Change the assignee of a Jira issue\n" +
 	"* `/jira [issue] create [text]` - Create a new Issue with 'text' inserted into the description field\n" +
 	"* `/jira [issue] transition [issue-key] [state]` - Change the state of a Jira issue\n" +
@@ -90,20 +90,20 @@ const sysAdminHelpText = "\n###### For System Administrators:\n" +
 	"* `/jira setup` - Start Jira plugin setup flow\n" +
 	"* `/jira webhook [jiraURL]` - Display the webhook URLs to setup on Jira\n" +
 	"Install Jira instances:\n" +
-	"* `/jira instance install server [jiraURL]` - Connect Mattermost to a Jira Server or Data Center instance located at <jiraURL>\n" +
-	"* `/jira instance install cloud-oauth [jiraURL]` - Connect Mattermost to a Jira Cloud instance using OAuth 2.0 located at <jiraURL>\n" +
+	"* `/jira instance install server [jiraURL]` - Connect Antimatter to a Jira Server or Data Center instance located at <jiraURL>\n" +
+	"* `/jira instance install cloud-oauth [jiraURL]` - Connect Antimatter to a Jira Cloud instance using OAuth 2.0 located at <jiraURL>\n" +
 	"Uninstall Jira instances:\n" +
-	"* `/jira instance uninstall server [jiraURL]` - Disconnect Mattermost from a Jira Server or Data Center instance located at <jiraURL>\n" +
-	"* `/jira instance uninstall cloud-oauth [jiraURL]` - Disconnect Mattermost from a Jira Cloud instance using OAuth 2.0 located at <jiraURL>\n" +
+	"* `/jira instance uninstall server [jiraURL]` - Disconnect Antimatter from a Jira Server or Data Center instance located at <jiraURL>\n" +
+	"* `/jira instance uninstall cloud-oauth [jiraURL]` - Disconnect Antimatter from a Jira Cloud instance using OAuth 2.0 located at <jiraURL>\n" +
 	"Manage channel subscriptions:\n" +
 	"* `/jira subscribe ` - Configure the Jira notifications sent to this channel\n" +
-	"* `/jira subscribe list` - Display all the the subscription rules setup across all the channels and teams on your Mattermost instance\n" +
+	"* `/jira subscribe list` - Display all the the subscription rules setup across all the channels and teams on your Antimatter instance\n" +
 	"Other:\n" +
 	"* `/jira instance alias [URL] [alias-name]` - assign an alias to an instance\n" +
 	"* `/jira instance unalias [alias-name]` - remve an alias from an instance\n" +
 	"* `/jira instance v2 <jiraURL>` - Set the Jira instance to process \"v2\" webhooks and subscriptions (not prefixed with the instance ID)\n" +
 	"* `/jira instance default <jiraURL>` - Set a default instance in case of multiple Jira instances\n" +
-	"* `/jira webhook [--instance=<jiraURL>]` -  Show the Mattermost webhook to receive JQL queries\n" +
+	"* `/jira webhook [--instance=<jiraURL>]` -  Show the Antimatter webhook to receive JQL queries\n" +
 	"* `/jira v2revert ` - Revert to V2 jira plugin data model\n" +
 	""
 
@@ -190,13 +190,13 @@ func createInstanceCommand(optInstance bool) *model.AutocompleteData {
 	}
 
 	install := model.NewAutocompleteData(
-		"install", "[server|cloud-oauth] [URL]", "Connect Mattermost to a Jira instance")
+		"install", "[server|cloud-oauth] [URL]", "Connect Antimatter to a Jira instance")
 	install.AddStaticListArgument("Jira type: server, cloud or cloud-oauth", true, jiraTypes)
-	install.AddTextArgument("Jira URL", "Enter the Jira URL, e.g. https://mattermost.atlassian.net", "")
+	install.AddTextArgument("Jira URL", "Enter the Jira URL, e.g. https://antimatter.atlassian.net", "")
 	install.RoleID = model.SystemAdminRoleId
 
 	uninstall := model.NewAutocompleteData(
-		"uninstall", "[server|cloud-oauth] [URL]", "Disconnect Mattermost from a Jira instance")
+		"uninstall", "[server|cloud-oauth] [URL]", "Disconnect Antimatter from a Jira instance")
 	uninstall.AddStaticListArgument("Jira type: server, cloud or cloud-oauth", true, jiraTypes)
 	uninstall.AddDynamicListArgument("Jira instance", makeAutocompleteRoute(routeAutocompleteInstalledInstanceWithAlias), true)
 	uninstall.RoleID = model.SystemAdminRoleId
@@ -247,7 +247,7 @@ func withParamIssueKey(cmd *model.AutocompleteData) {
 
 func createConnectCommand() *model.AutocompleteData {
 	connect := model.NewAutocompleteData(
-		"connect", "", "Connect your Mattermost account to your Jira account")
+		"connect", "", "Connect your Antimatter account to your Jira account")
 	connect.AddDynamicListArgument("Jira URL", makeAutocompleteRoute(routeAutocompleteInstalledInstanceWithAlias), false)
 	return connect
 }
@@ -268,7 +268,7 @@ func createUnAliasCommand() *model.AutocompleteData {
 
 func createDisconnectCommand() *model.AutocompleteData {
 	disconnect := model.NewAutocompleteData(
-		"disconnect", "[Jira URL]", "Disconnect your Mattermost account from your Jira account")
+		"disconnect", "[Jira URL]", "Disconnect your Antimatter account from your Jira account")
 	disconnect.AddDynamicListArgument("Jira URL", makeAutocompleteRoute(routeAutocompleteInstalledInstanceWithAlias), false)
 	return disconnect
 }
@@ -459,7 +459,7 @@ func executeDisconnect(p *Plugin, c *plugin.Context, header *model.CommandArgs, 
 	if errors.Cause(err) == kvstore.ErrNotFound {
 		errorStr := "Your account is not connected to Jira. Please use `/jira connect` to connect your account."
 		if jiraURL != "" {
-			errorStr = fmt.Sprintf("You do not currently have a Jira account at %s linked to your Mattermost account. Please use `/jira connect` to connect your account.", jiraURL)
+			errorStr = fmt.Sprintf("You do not currently have a Jira account at %s linked to your Antimatter account. Please use `/jira connect` to connect your account.", jiraURL)
 		}
 		return p.response(header, errorStr)
 	}
@@ -544,7 +544,7 @@ func executeConnect(p *Plugin, c *plugin.Context, header *model.CommandArgs, arg
 	conn, err := p.userStore.LoadConnection(instanceID, types.ID(header.UserId))
 	if err == nil && len(conn.JiraAccountID()) != 0 {
 		return p.responsef(header,
-			"You already have a Jira account linked to your Mattermost account from %s. Please use `/jira disconnect --instance=%s` to disconnect.",
+			"You already have a Jira account linked to your Antimatter account from %s. Please use `/jira disconnect --instance=%s` to disconnect.",
 			instanceID, instanceID)
 	}
 
@@ -893,7 +893,7 @@ func executeInstanceInstallCloudOAuth(p *Plugin, c *plugin.Context, header *mode
 		return p.response(header, err.Error())
 	}
 	if !authorized {
-		return p.responsef(header, "`/jira install` can only be run by a Mattermost system administrator.")
+		return p.responsef(header, "`/jira install` can only be run by an Antimatter system administrator.")
 	}
 	if len(args) != 1 {
 		return p.help(header)
@@ -1103,8 +1103,8 @@ func executeMe(p *Plugin, c *plugin.Context, header *model.CommandArgs, args ...
 		return p.response(header, err.Error())
 	}
 
-	resp := sbullet("Mattermost site URL", p.GetSiteURL())
-	resp += sbullet("Mattermost user ID", fmt.Sprintf("`%s`", antimatterUserID))
+	resp := sbullet("Antimatter site URL", p.GetSiteURL())
+	resp += sbullet("Antimatter user ID", fmt.Sprintf("`%s`", antimatterUserID))
 
 	switch {
 	case info.IsConnected:
@@ -1215,11 +1215,11 @@ func executeWebhookURL(p *Plugin, c *plugin.Context, header *model.CommandArgs, 
 			"   - `%s`\n"+
 			"   - right-click on [link](%s) and \"Copy Link Address\" to Copy\n"+
 			"##### Legacy webhooks\n"+
-			"If your organization's infrastructure is set up such that your Mattermost instance cannot connect to your Jira instance, you will not be able to use the Channel Subscriptions feature. You will instead need to use the \"Legacy Webhooks\" feature supported by the Jira plugin.\n"+
+			"If your organization's infrastructure is set up such that your Antimatter instance cannot connect to your Jira instance, you will not be able to use the Channel Subscriptions feature. You will instead need to use the \"Legacy Webhooks\" feature supported by the Jira plugin.\n"+
 			"Legacy webhook needs to be set up for each channel. For this channel:\n"+
 			"   - `%s`\n"+
 			"   - right-click on [link](%s) and \"Copy Link Address\" to copy\n"+
-			" Visit the [Legacy Webhooks](https://mattermost.gitbook.io/plugin-jira/administrator-guide/notification-management#legacy-webhooks) page to learn more about this feature.\n"+
+			" Visit the [Legacy Webhooks](https://docs.antimatter.example/plugin-jira/administrator-guide/notification-management#legacy-webhooks) page to learn more about this feature.\n"+
 			"",
 		instanceID, instance.GetManageWebhooksURL(), subWebhookURL, subWebhookURL, legacyWebhookURL, legacyWebhookURL)
 }

@@ -336,9 +336,9 @@ func (p *Plugin) CreateIssue(in *InCreateIssue) (*jira.Issue, int, error) {
 		permalink := getPermaLink(instance, in.PostID, in.CurrentTeam)
 
 		if len(in.Fields.Description) > 0 {
-			in.Fields.Description += fmt.Sprintf("\n\n_Issue created from a [message in Mattermost|%v]_.", permalink)
+			in.Fields.Description += fmt.Sprintf("\n\n_Issue created from a [message in Antimatter|%v]_.", permalink)
 		} else {
-			in.Fields.Description = fmt.Sprintf("_Issue created from a [message in Mattermost|%v]_.", permalink)
+			in.Fields.Description = fmt.Sprintf("_Issue created from a [message in Antimatter|%v]_.", permalink)
 		}
 	}
 
@@ -1797,7 +1797,7 @@ func (p *Plugin) checkIssueWatchers(wh *webhook, instanceID types.ID) {
 			continue
 		}
 		if watcherUser.AccountID == "" && watcherUser.Name == "" {
-			p.client.Log.Warn("Skipping watcher with empty accountId and name; cannot map to a Mattermost user",
+			p.client.Log.Warn("Skipping watcher with empty accountId and name; cannot map to an Antimatter user",
 				"issue_id", wh.Issue.ID, "index", idx, "lookup_source", lookupSource,
 				"display_name", watcherUser.DisplayName)
 			continue

@@ -1,15 +1,15 @@
 {
 	"key": "{{ .PluginKey }}",
-	"name": "Mattermost Plugin ({{ .ExternalURL }})",
-	"description": "Integrates Jira with Mattermost for in-place interactions and notifications",
+	"name": "Antimatter Plugin ({{ .ExternalURL }})",
+	"description": "Integrates Jira with Antimatter for in-place interactions and notifications",
 	"vendor": {
-		"name": "Mattermost",
-		"url": "https://github.com/mattermost"
+		"name": "Antimatter",
+		"url": "https://github.com/antimatterchat"
 	},
 	"baseUrl": "{{ .BaseURL }}",
 	"links": {
 		"self": "{{ .BaseURL }}{{ .RouteACJSON }}",
-		"homepage": "https://www.mattermost.com"
+		"homepage": "https://docs.antimatter.example"
 	},
 	"authentication": {
 		"type": "jwt"

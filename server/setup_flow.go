@@ -142,7 +142,7 @@ func continueButton(next flow.Name) flow.Button {
 
 func (p *Plugin) stepWelcome() flow.Step {
 	return flow.NewStep(stepWelcome).
-		WithPretext(":wave: Welcome to Jira integration! [Learn more](https://github.com/mattermost/mattermost-plugin-jira#readme)").
+		WithPretext(":wave: Welcome to Jira integration! [Learn more](https://github.com/antimatterchat/antimatter-plugin-jira#readme)").
 		WithText("Just a few more configuration steps to go!\n" +
 			"1. Choose your Jira edition.\n" +
 			"2. Create an incoming application link.\n" +
@@ -150,7 +150,7 @@ func (p *Plugin) stepWelcome() flow.Step {
 			"4. Connect your user account.\n" +
 			"\n" +
 			"You can **Cancel** setup at any time, and use `/jira` command to complete the configuration later. " +
-			"See the [documentation](https://mattermost.gitbook.io/plugin-jira/setting-up/configuration) for details.").
+			"See the [documentation](https://docs.antimatter.example/plugin-jira/setting-up/configuration) for details.").
 		OnRender(func(f *flow.Flow) {
 			p.trackSetupWizard("setup_wizard_start", map[string]interface{}{
 				"from_invite": f.GetState().GetString(keyDelegatedFromUserID) != "",
@@ -182,7 +182,7 @@ func (p *Plugin) stepDelegate() flow.Step {
 						Type:        "select",
 						DataSource:  "users",
 						Placeholder: "Search for people",
-						HelpText:    "A Jira admin who can finish setting up the Mattermost integration in Jira.",
+						HelpText:    "A Jira admin who can finish setting up the Antimatter integration in Jira.",
 					},
 				},
 			},
@@ -215,7 +215,7 @@ func (p *Plugin) stepChooseEdition() flow.Step {
 		WithPretext("##### :white_check_mark: Step 1: Which Jira edition do you use?").
 		WithTitle("Cloud (OAuth 2.0) or Server (on-premise).").
 		WithText("Choose whether you're using Jira Cloud (OAuth 2.0) or Jira Server (on-premise/Data Center) edition. " +
-			"To integrate with more than one Jira instance, see the [documentation](https://mattermost.gitbook.io/plugin-jira/)").
+			"To integrate with more than one Jira instance, see the [documentation](https://docs.antimatter.example/plugin-jira/)").
 		WithButton(
 			flow.Button{
 				Name:  "Jira Cloud (OAuth 2.0)",
@@ -259,7 +259,7 @@ func (p *Plugin) stepChooseEdition() flow.Step {
 
 func (p *Plugin) stepServerAddAppLink() flow.Step {
 	return flow.NewStep(stepServerAddAppLink).
-		WithPretext("##### :white_check_mark: Step 2: Configure the Mattermost Application Link in Jira").
+		WithPretext("##### :white_check_mark: Step 2: Configure the Antimatter Application Link in Jira").
 		WithTitle("Create an incoming application Link.").
 		WithText("Jira server {{.JiraURL}} has been successfully added. " +
 			"To finish the configuration, we'll need to add and configure an Application Link in your Jira instance.\n" +
@@ -288,7 +288,7 @@ func (p *Plugin) stepServerConfigureAppLink1() flow.Step {
 		WithTitle("Create Incoming Application Link.").
 		WithText("Complete the following steps in Jira, then come back here to select **Continue**.\n\n" +
 			"1. In Jira's **Link Applications** screen (see _screenshot_) enter the following values, and leave all other fields blank.\n" +
-			"  - **Application Name**:  `Mattermost`\n" +
+			"  - **Application Name**:  `Antimatter`\n" +
 			"  - **Application Type**: **Generic Application**\n" +
 			"  - **Create incoming link**: :heavy_check_mark: **(important)**\n" +
 			"2. Select **Continue**.\n").
@@ -303,7 +303,7 @@ func (p *Plugin) stepServerConfigureAppLink2() flow.Step {
 		WithText("Complete the following steps in Jira, then come back here to select **Continue**.\n\n" +
 			"1. In Jira's second **Link Applications** screen (see _screenshot_) enter the following values, and leave all other fields blank.\n" +
 			"  - **Consumer Key**: `{{.MattermostKey}}`\n" +
-			"  - **Consumer Name**: `Mattermost`\n" +
+			"  - **Consumer Name**: `Antimatter`\n" +
 			"  - **Public Key**:\n```\n{{ .PublicKey }}\n```\n" +
 			"2. Select **Continue**.\n").
 		WithImage("public/server-configure-applink-2.png").
@@ -316,7 +316,7 @@ func (p *Plugin) stepCloudOAuthConfigure() flow.Step {
 		WithPretext("##### :white_check_mark: Step 2: Register an OAuth 2.0 Application in Jira").
 		WithText(fmt.Sprintf("Complete the following steps, then come back here to select **Configure**.\n\n"+
 			"1. Create an OAuth 2.0 application in Jira from the [Developer console](https://developer.atlassian.com/console/myapps/create-3lo-app/).\n"+
-			"2. Name your app according to its purpose, for example:  `Mattermost Jira Plugin - <your company name>`.\n"+
+			"2. Name your app according to its purpose, for example:  `Antimatter Jira Plugin - <your company name>`.\n"+
 			"3. Accept the **Terms** and click **Create**.\n"+
 			"4. Select **Permissions** in the left menu. Next to the JIRA API, select **Add**.\n"+
 			"5. Then select **Configure** and ensure following scopes are selected:\n"+
@@ -379,8 +379,8 @@ func (p *Plugin) stepInstalledJiraApp() flow.Step {
 		}
 	}
 	return flow.NewStep(stepInstalledJiraApp).
-		WithText("You've finished configuring the Mattermost App in Jira. Select **Continue** to set up the subscription webhook " +
-			"for sending notifications to Mattermost.").
+		WithText("You've finished configuring the Antimatter App in Jira. Select **Continue** to set up the subscription webhook " +
+			"for sending notifications to Antimatter.").
 		OnRender(func(f *flow.Flow) {
 			p.trackSetupWizard("setup_wizard_jira_config_complete", map[string]interface{}{
 				keyEdition: f.GetState().GetString(keyEdition),
@@ -397,9 +397,9 @@ func (p *Plugin) stepInstalledJiraApp() flow.Step {
 func (p *Plugin) stepWebhook() flow.Step {
 	return flow.NewStep(stepWebhook).
 		WithPretext("##### :white_check_mark: Step 3: Setup Jira Subscriptions Webhook").
-		WithText(`To receive Jira event notifications in Mattermost Channels, you need to set up a single global ` +
+		WithText(`To receive Jira event notifications in Antimatter Channels, you need to set up a single global ` +
 			"webhook, configured for all possible event triggers that you would like to be pushed into " +
-			"Mattermost. The plugin processes all data from the global webhook, and then routes the events " +
+			"Antimatter. The plugin processes all data from the global webhook, and then routes the events " +
 			"to channels and users based on your subscriptions.\n\n" +
 			"1. Navigate to [Jira System Settings/Webhooks]({{.ManageWebhooksURL}}) (see _screenshot_), select **Create a WebHook** in the top right corner.\n" +
 			"2. Give your webhook a meaningful **Name** of your choice.\n" +
@@ -448,18 +448,18 @@ func (p *Plugin) stepConnect() flow.Step {
 
 func (p *Plugin) stepConnected() flow.Step {
 	return flow.NewStep(stepConnected).
-		WithText("You've successfully connected your Mattermost user account to Jira.").
+		WithText("You've successfully connected your Antimatter user account to Jira.").
 		OnRender(p.trackSetupWizard("setup_wizard_user_connect_complete", nil)).
 		Next(stepAnnouncementQuestion)
 }
 
 func (p *Plugin) stepAnnouncementQuestion() flow.Step {
 	return flow.NewStep(stepAnnouncementQuestion).
-		WithPretext("##### :tada: Success! You've successfully set up your Mattermost Jira integration!").
+		WithPretext("##### :tada: Success! You've successfully set up your Antimatter Jira integration!").
 		WithText("You can now:\n" +
-			"- Subscribe channels in Mattermost to receive updates from Jira with `/jira subscribe` command (navigate to the target channel first).\n" +
-			"- Create Jira issues from posts in Mattermost by selecting **Create Jira Issue** from the **...** menu of the relevant post.\n" +
-			"- Attach Mattermost posts to Jira issues as comments by selecting **Attach to Jira Issue** from the **...** menu.\n" +
+			"- Subscribe channels in Antimatter to receive updates from Jira with `/jira subscribe` command (navigate to the target channel first).\n" +
+			"- Create Jira issues from posts in Antimatter by selecting **Create Jira Issue** from the **...** menu of the relevant post.\n" +
+			"- Attach Antimatter posts to Jira issues as comments by selecting **Attach to Jira Issue** from the **...** menu.\n" +
 			"- Control your personal notifications from Jira with `/jira instance settings` command.\n\n" +
 			"Want to let your team know?\n").
 		OnRender(p.trackSetupWizard("setup_wizard_announcement_start", nil)).
@@ -482,10 +482,10 @@ func (p *Plugin) stepAnnouncementQuestion() flow.Step {
 						Name:        "message",
 						Type:        "textarea",
 						Default: "Hi team,\n\n" +
-							"We've added an integration that connects Jira and Mattermost. You can get notified when you are mentioned in Jira comments, " +
-							"or quickly change a message in Mattermost into a ticket in Jira. It's easy to get started, run the `/jira connect` slash " +
-							"command from any channel within Mattermost to connect your user account. See the " +
-							"[documentation](https://docs.mattermost.com/integrate/jira.html#use) for details on using the Jira plugin.",
+							"We've added an integration that connects Jira and Antimatter. You can get notified when you are mentioned in Jira comments, " +
+							"or quickly change a message in Antimatter into a ticket in Jira. It's easy to get started, run the `/jira connect` slash " +
+							"command from any channel within Antimatter to connect your user account. See the " +
+							"[documentation](https://docs.antimatter.example/integrate/jira.html#use) for details on using the Jira plugin.",
 						HelpText: "You can edit this message before sending it.",
 					},
 				},
@@ -551,7 +551,7 @@ func (p *Plugin) stepCancel() flow.Step {
 		WithColor(flow.ColorDanger).
 		// WithPretext("##### :no_entry_sign: Canceled").
 		WithText("Jira integration set up has been canceled. Run it again later using the `/jira setup` command, " +
-			"or refer to the [documentation](https://mattermost.gitbook.io/plugin-jira/setting-up) " +
+			"or refer to the [documentation](https://docs.antimatter.example/plugin-jira/setting-up) " +
 			"to configure it manually.\n").
 		OnRender(p.trackSetupWizard("setup_wizard_canceled", nil))
 }

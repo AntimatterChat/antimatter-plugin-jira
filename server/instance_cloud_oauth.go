@@ -196,7 +196,7 @@ func (ci *cloudOAuthInstance) getClientForConnection(connection *Connection) (*j
 
 func (ci *cloudOAuthInstance) GetDisplayDetails() map[string]string {
 	return map[string]string{
-		"Jira Cloud Mattermost Key": ci.MattermostKey,
+		"Jira Cloud Antimatter Key": ci.MattermostKey,
 	}
 }
 

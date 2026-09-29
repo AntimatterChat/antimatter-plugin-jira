@@ -100,7 +100,7 @@ func (p *Plugin) httpUserConnect(w http.ResponseWriter, r *http.Request, instanc
 	connection, err := p.userStore.LoadConnection(instance.GetID(), types.ID(antimatterUserID))
 	if err == nil && len(connection.JiraAccountID()) != 0 {
 		return respondErr(w, http.StatusBadRequest,
-			errors.New("you already have a Jira account linked to your Mattermost account. Please use `/jira disconnect` to disconnect"))
+			errors.New("you already have a Jira account linked to your Antimatter account. Please use `/jira disconnect` to disconnect"))
 	}
 
 	redirectURL, cookie, err := instance.GetUserConnectURL(antimatterUserID)
@@ -138,7 +138,7 @@ func (p *Plugin) httpUserDisconnect(w http.ResponseWriter, r *http.Request) (int
 	if errors.Cause(err) == kvstore.ErrNotFound {
 		return respondErr(w, http.StatusNotFound,
 			errors.Errorf(
-				"could not complete the **disconnection** request. You do not currently have a Jira account at %q linked to your Mattermost account",
+				"could not complete the **disconnection** request. You do not currently have a Jira account at %q linked to your Antimatter account",
 				disconnectPayload.InstanceID))
 	}
 	if err != nil {

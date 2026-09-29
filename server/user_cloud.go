@@ -110,9 +110,9 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 	if err != nil {
 		siteURL := p.GetSiteURL()
 		return respondErr(w, http.StatusUnauthorized, errors.New(
-			`Mattermost failed to recognize your user account. `+
+			`Antimatter failed to recognize your user account. `+
 				`Please make sure third-party cookies are enabled in your browser settings. You can disable this setting after conntecting your Jira account. `+
-				`Please also make sure you are signed into Mattermost at `+siteURL))
+				`Please also make sure you are signed into Antimatter at `+siteURL))
 	}
 
 	antimatterUserID, secret, err := p.ParseAuthToken(amToken)
@@ -143,7 +143,7 @@ func (p *Plugin) httpACUserInteractive(w http.ResponseWriter, r *http.Request, i
 		if err != nil {
 			return respondErr(w, http.StatusInternalServerError, err)
 		}
-		// TODO For https://github.com/mattermost/mattermost-plugin-jira/issues/149, need a channel ID
+		// TODO For https://github.com/antimatterchat/antimatter-plugin-jira/issues/149, need a channel ID
 		// msg := fmt.Sprintf("You have successfully connected your Jira account (**%s**).", connection.DisplayName)
 		// _ = p.client.Post.SendEphemeralPost(antimatterUserID, makePost(p.getUserID(), channelID, msg))
 

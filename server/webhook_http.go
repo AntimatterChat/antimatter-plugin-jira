@@ -22,7 +22,7 @@ const (
 )
 
 // The keys listed here can be used in the Jira webhook URL to control what events
-// are posted to Mattermost. A matching parameter with a non-empty value must
+// are posted to Antimatter. A matching parameter with a non-empty value must
 // be added to turn on the event display.
 var eventParamMasks = map[string]StringSet{
 	"updated_attachment":  NewStringSet(eventUpdatedAttachment),  // updated attachments

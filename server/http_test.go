@@ -1575,7 +1575,7 @@ func TestShareIssuePubliclyAuthentication(t *testing.T) {
 		conf.Secret = someSecret
 	})
 
-	t.Run("missing Mattermost user header", func(t *testing.T) {
+	t.Run("missing Antimatter user header", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/api/v2/share-issue-publicly", bytes.NewReader([]byte(`{}`)))
 		w := httptest.NewRecorder()
 		p.ServeHTTP(&plugin.Context{}, w, req)

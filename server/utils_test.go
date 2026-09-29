@@ -516,7 +516,7 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			loadUserErr:      nil,
 		},
 		{
-			name:             "mention replaced with mattermost username",
+			name:             "mention replaced with antimatter username",
 			body:             "Hello [~accountid:123456789], please review",
 			expectedResult:   "Hello @testuser, please review",
 			antimatterUserID: "mm-user-id",
@@ -574,7 +574,7 @@ func TestReplaceJiraAccountIds(t *testing.T) {
 			},
 		},
 		{
-			name:             "legacy username format replaced with mattermost username",
+			name:             "legacy username format replaced with antimatter username",
 			body:             "Hello [~jirauser], please review",
 			expectedResult:   "Hello @testuser, please review",
 			antimatterUserID: "mm-user-id",

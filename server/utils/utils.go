@@ -91,7 +91,7 @@ func CheckJiraURL(antimatterSiteURL, jiraURL string, requireHTTPS bool) (_ strin
 		return "", err
 	}
 	if jiraURL == strings.TrimSuffix(antimatterSiteURL, "/") {
-		return "", errors.Errorf("%s is the Mattermost site URL. Please use your Jira URL", jiraURL)
+		return "", errors.Errorf("%s is the Antimatter site URL. Please use your Jira URL", jiraURL)
 	}
 
 	defer func() {

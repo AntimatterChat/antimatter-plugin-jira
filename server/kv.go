@@ -174,7 +174,7 @@ func (store store) LoadConnection(instanceID, antimatterUserID types.ID) (*Conne
 	err := store.get(keyWithInstanceID(instanceID, antimatterUserID), c)
 	if err != nil {
 		return nil, errors.Wrapf(err,
-			"failed to load connection for Mattermost user ID:%q, Jira:%q", antimatterUserID, instanceID)
+			"failed to load connection for Antimatter user ID:%q, Jira:%q", antimatterUserID, instanceID)
 	}
 	c.PluginVersion = manifest.Version
 	return c, nil
@@ -185,11 +185,11 @@ func (store store) LoadAntimatterUserID(instanceID types.ID, jiraUserNameOrID st
 	err := store.get(keyWithInstanceID(instanceID, types.ID(jiraUserNameOrID)), &antimatterUserID)
 	if err != nil {
 		return "", errors.Wrapf(err,
-			"failed to load Mattermost user ID for Jira username/ID: %s", jiraUserNameOrID)
+			"failed to load Antimatter user ID for Jira username/ID: %s", jiraUserNameOrID)
 	}
 
 	if antimatterUserID == "" {
-		return "", errors.Errorf("failed to load Mattermost user ID for Jira username/ID: %s", jiraUserNameOrID)
+		return "", errors.Errorf("failed to load Antimatter user ID for Jira username/ID: %s", jiraUserNameOrID)
 	}
 
 	return antimatterUserID, nil
@@ -632,7 +632,7 @@ func UpdateInstances(store InstanceStore, updatef func(instances *Instances) err
 //
 //   - v2keyKnownJiraInstances ("known_jira_instances") was stored as a
 //     map[string]string (InstanceID->Type), needs to be stored as Instances.
-//     https://github.com/mattermost/mattermost-plugin-jira/blob/885efe8eb70c92bcea64d1ced6e67710eda77b6e/server/kv.go#L375
+//     https://github.com/antimatterchat/antimatter-plugin-jira/blob/885efe8eb70c92bcea64d1ced6e67710eda77b6e/server/kv.go#L375
 //   - v2keyCurrentJIRAInstance ("current_jira_instance") stored an Instance; will
 //     be used to set the default instance.
 //   - The instances themselves should be forward-compatible, including

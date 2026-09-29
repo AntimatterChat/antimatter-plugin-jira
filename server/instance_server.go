@@ -70,7 +70,7 @@ func (si *serverInstance) GetAntimatterKey() string {
 
 func (si *serverInstance) GetDisplayDetails() map[string]string {
 	return map[string]string{
-		"Jira Server Mattermost Key": si.MattermostKey,
+		"Jira Server Antimatter Key": si.MattermostKey,
 	}
 }
 

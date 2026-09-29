@@ -37,7 +37,7 @@ type cloudInstance struct {
 	// SetupRoutingSecret is a high-entropy value used only in instance URL paths
 	// during the Atlassian Connect install window. It must not appear in public
 	// descriptor responses reachable via the Jira-URL-derived path alone; the admin
-	// receives the full descriptor URL from Mattermost after /jira install.
+	// receives the full descriptor URL from Antimatter after /jira install.
 	SetupRoutingSecret string `json:"setup_routing_secret,omitempty"`
 
 	// For cloud instances (atlassian-connect.json install and user auth)

@@ -177,6 +177,6 @@ func TestIsJiraAccessible(t *testing.T) {
 	t.Run("site URL", func(t *testing.T) {
 		_, err := CheckJiraURL(dummyURL, dummyURL, false)
 		assert.Error(t, err)
-		assert.Equal(t, "https://dummy-url.com is the Mattermost site URL. Please use your Jira URL", err.Error())
+		assert.Equal(t, "https://dummy-url.com is the Antimatter site URL. Please use your Jira URL", err.Error())
 	})
 }

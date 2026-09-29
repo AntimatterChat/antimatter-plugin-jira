@@ -328,10 +328,10 @@ func quoteIssueComment(comment string) string {
 }
 
 // preProcessText processes the given string to apply various formatting transformations.
-// The purpose of the function is to convert the formatting provided by JIRA into the corresponding formatting supported by Mattermost.
+// The purpose of the function is to convert the formatting provided by JIRA into the corresponding formatting supported by Antimatter.
 // This includes converting asterisks to bold, hyphens to strikethrough, JIRA-style headings to Markdown headings,
 // JIRA code blocks to inline code, numbered lists to Markdown lists, colored text to plain text, and JIRA links to Markdown links.
-// For more reference, please visit https://github.com/mattermost/mattermost-plugin-jira/issues/1096
+// For more reference, please visit https://github.com/antimatterchat/antimatter-plugin-jira/issues/1096
 func preProcessText(jiraMarkdownString string) string {
 	asteriskRegex := regexp.MustCompile(`\*(\w+)\*`)
 	hyphenRegex := regexp.MustCompile(`\B-([\w\d\s]+)-\B`)
