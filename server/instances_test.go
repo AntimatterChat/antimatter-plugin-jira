@@ -35,7 +35,6 @@ func TestInstallInstance(t *testing.T) {
 			p.client = pluginapi.NewClient(api, p.Driver)
 			p.instanceStore = p.getMockInstanceStoreKV(tc.numInstances)
 
-
 			api.On("KVGet", mock.Anything).Return(mock.Anything, nil)
 			api.On("GetConfig").Return(&model.Config{})
 			api.On("UnregisterCommand", mock.Anything, mock.Anything).Return(nil)
