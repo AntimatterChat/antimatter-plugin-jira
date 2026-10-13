@@ -152,6 +152,16 @@ Assign issues to other Jira users without the need to switch to your Jira projec
 
 For instance, `/jira assign EXT-20 john` transitions the issue key **EXT-20** to **John**.
 
+## Feedback and support
+
+Found a bug in the Jira plugin, or missing a feature? Please [open an
+issue](https://github.com/AntimatterChat/community/issues/new/choose) in the [Antimatter community
+repository](https://github.com/AntimatterChat/community), where the feedback for every part of
+Antimatter is gathered. Questions and ideas are welcome in its
+[Discussions](https://github.com/AntimatterChat/community/discussions). Please report security
+problems privately, as explained in the [security
+policy](https://github.com/AntimatterChat/.github/blob/main/SECURITY.md).
+
 ## License
 
 This repository is licensed under the [Apache 2.0 License](LICENSE.txt).
@@ -220,15 +230,3 @@ This plugin supports both Jira Server (self-hosted) and Jira Cloud instances. Th
 To test your changes against a local instance of Jira Server, you need [Docker](https://docs.docker.com/install) installed, then you can use the `docker-compose.yml` file in this repository to create a Jira instance. Simply run `docker-compose up` in the directory of the repository, and a new Jira server should start up and be available at http://localhost:8080. It can take a few minutes to start up due to Jira Server's startup processes. If the container fails to start with `exit code 137`, you may need to increase the amount of RAM you are allowing docker to use.
 
 To test your changes against a Jira Cloud instance, we recommend starting a 14-day trial, if you don't have a Jira project to test against. More information can be found here: https://www.atlassian.com/software/jira/try.
-
-### Help wanted!
-
-If you're interested in joining our community of developers who contribute to Antimatter - check out the current set of issues [that are being requested](https://github.com/antimatterchat/antimatter-plugin-jira/issues?q=is%3Aissue+is%3Aopen+label%3AEnhancement).
-
-You can also find issues labeled ["Help Wanted"](https://github.com/antimatterchat/antimatter-plugin-jira/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+Wanted%22) in the Jira Repository that we have laid out the primary requirements for and could use some coding help from the community.
-
-### Help and support
-
-- For Antimatter customers - Please open a support case.
-- For questions, suggestions, and help, visit the [Jira Plugin channel](https://docs.antimatter.example/core/channels/jira-plugin) on our Community server.
-- To report a bug, please [open an issue](https://github.com/antimatterchat/antimatter-plugin-jira/issues).
