@@ -104,18 +104,11 @@ func (p *Plugin) userCount() (int, error) {
 // The telemetry.NewTrackerConfig(...) param will take care of extract/parse the config to set the right settings.
 // If you don't want the default behavior you still can pass a different telemetry.TrackerConfig data.
 func (p *Plugin) initializeTelemetry() {
-	var err error
-
-	// Telemetry client
-	p.telemetryClient, err = telemetry.NewRudderClient()
-	if err != nil {
-		p.API.LogWarn("Telemetry client not started", "error", err.Error())
-		return
-	}
-
+	// Telemetry went to Mattermost, Inc.'s data plane: Antimatter sends none, so the tracker has no
+	// client and drops every event.
 	// Get config values
 	p.tracker = telemetry.NewTracker(
-		p.telemetryClient,
+		nil,
 		p.API.GetDiagnosticId(),
 		p.API.GetServerVersion(),
 		manifest.Id,

@@ -7,9 +7,8 @@ import (
 	rudder "github.com/rudderlabs/analytics-go"
 )
 
-// rudderDataPlaneURL is set to the common Data Plane URL for all Antimatter Projects.
-// It can be set during build time. More info in the package documentation.
-var rudderDataPlaneURL = "https://pdat.matterlytics.com"
+// rudderDataPlaneURL is empty: Antimatter sends no telemetry. It can be set during build time.
+var rudderDataPlaneURL = ""
 
 // rudderWriteKey is set during build time. More info in the package documentation.
 var rudderWriteKey string
