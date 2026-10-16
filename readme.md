@@ -9,7 +9,7 @@ This plugin supports a two-way integration between Antimatter and Jira. Jira Cor
 
 For versions v3.0 and later of this plugin, multiple Jira instances are supported, configured using [Administrator Slash Commands](https://github.com/antimatterchat/antimatter-plugin-jira#readme).
 
-See the [Antimatter Product Documentation](https://docs.antimatter.example/integrations-guide/jira.html) for details on installing, configuring, enabling, and using this Antimatter integration.
+See the [Antimatter Product Documentation](https://antimatter.chat/docs/admins/apps.html#integrations) for details on installing, configuring, enabling, and using this Antimatter integration.
 
 ## Getting started locally
 
@@ -168,7 +168,7 @@ This repository is licensed under the [Apache 2.0 License](LICENSE.txt).
 
 ## Development
 
-This plugin contains both a server and web app portion. Read our documentation about the [Developer Workflow](https://docs.antimatter.example/integrate/plugins/developer-workflow/) and [Developer Setup](https://docs.antimatter.example/integrate/plugins/developer-setup/) for more information about developing and extending plugins.
+This plugin contains both a server and web app portion. Read our documentation about the [Developer Workflow](https://antimatter.chat/docs/developers/apps.html) and [Developer Setup](https://antimatter.chat/docs/developers/building.html) for more information about developing and extending plugins.
 
 ### Releasing new versions
 
@@ -221,9 +221,9 @@ To trigger a release, follow these steps:
 
 ### Environment
 
-Join the [Jira plugin channel](https://docs.antimatter.example/core/channels/jira-plugin) on our community server to discuss any questions.
+Join the [AntimatterChat/community Discussions](https://github.com/AntimatterChat/community/discussions) to discuss any questions.
 
-Read our documentation about the [Developer Workflow](https://docs.antimatter.example/extend/plugins/developer-workflow/) and [Developer Setup](https://docs.antimatter.example/extend/plugins/developer-setup/) for more information about developing and extending plugins.
+Read our documentation about the [Developer Workflow](https://antimatter.chat/docs/developers/apps.html) and [Developer Setup](https://antimatter.chat/docs/developers/building.html) for more information about developing and extending plugins.
 
 This plugin supports both Jira Server (self-hosted) and Jira Cloud instances. There can be slight differences in behavior between the two systems, so it's best to test with both systems individually when introducing new webhook logic, or adding a new Jira API call.
 
