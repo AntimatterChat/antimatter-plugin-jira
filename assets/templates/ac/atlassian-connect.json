@@ -9,7 +9,7 @@
 	"baseUrl": "{{ .BaseURL }}",
 	"links": {
 		"self": "{{ .BaseURL }}{{ .RouteACJSON }}",
-		"homepage": "https://docs.antimatter.example"
+		"homepage": "https://antimatter.chat"
 	},
 	"authentication": {
 		"type": "jwt"

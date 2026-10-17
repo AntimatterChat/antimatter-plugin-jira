@@ -29,4 +29,4 @@
 7. Click the "More Actions" (...) option of any message in the channel
    (available when you hover over a message).
 
-If you see an option to create a Jira issue, you're all set! If not, refer to our [documentation](https://docs.antimatter.example/plugin-jira) for troubleshooting help.
+If you see an option to create a Jira issue, you're all set! If not, refer to our [documentation](https://antimatter.chat/docs/admins/apps.html#integrations) for troubleshooting help.

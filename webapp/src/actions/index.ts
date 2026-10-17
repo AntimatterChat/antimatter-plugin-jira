@@ -574,7 +574,7 @@ export function handleConnectFlow(instanceID?: string) {
         }
 
         if (instance && instance.type === InstanceType.SERVER && isDesktopApp() && !isMinimumDesktopAppVersion(4, 3, 0)) { // eslint-disable-line no-magic-numbers
-            const errMsg = 'Your version of the Antimatter desktop client does not support authenticating between Jira and Antimatter directly. To connect your Jira account with Antimatter, please go to Antimatter via your web browser and type `/jira connect`, or [check the Antimatter download page](https://docs.antimatter.example/download/#antimatterApps) to get the latest version of the desktop client.';
+            const errMsg = 'Your version of the Antimatter desktop client does not support authenticating between Jira and Antimatter directly. To connect your Jira account with Antimatter, please go to Antimatter via your web browser and type `/jira connect`, or [check the Antimatter download page](https://antimatter.chat/docs/users/index.html#apps) to get the latest version of the desktop client.';
             dispatch(sendEphemeralPost(errMsg));
             return;
         }

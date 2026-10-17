@@ -20,14 +20,14 @@
         "bundle_path": "webapp/dist/main.js"
     },
     "settings_schema": {
-        "header": "Please refer to the '/jira' command [**documentation**](https://docs.antimatter.example/pl/integrate/jira-admin-setup) to further configure the Jira plugin.",
-        "footer": "Please refer to the '/jira' command [**documentation**](https://docs.antimatter.example/pl/integrate/jira-admin-setup) to further configure the Jira plugin. Specifically, ['/jira instance [un-]install'](https://docs.antimatter.example/pl/integrate/jira-admin-setup) and ['/jira webhook'](https://docs.antimatter.example/pl/integrate/configure-webhooks-in-jira).",
+        "header": "Please refer to the '/jira' command [**documentation**](https://antimatter.chat/docs/admins/apps.html#integrations) to further configure the Jira plugin.",
+        "footer": "Please refer to the '/jira' command [**documentation**](https://antimatter.chat/docs/admins/apps.html#integrations) to further configure the Jira plugin. Specifically, ['/jira instance [un-]install'](https://antimatter.chat/docs/admins/apps.html#integrations) and ['/jira webhook'](https://antimatter.chat/docs/admins/apps.html#integrations).",
         "settings": [
             {
                 "key": "EnableJiraUI",
                 "display_name": "Allow users to attach and create Jira issues in Antimatter:",
                 "type": "bool",
-                "help_text": "When **false**, users cannot attach and create Jira issues in Antimatter. Does not affect Jira webhook notifications. Select **false** then disable and re-enable this plugin in **System Console \u003e Plugins \u003e Plugin Management** to reset the plugin state for all users. \n \n When **true**, install this plugin to your Jira instance with '/jira install' to allow users to create and manage issues across Antimatter channels. See [documentation](https://docs.antimatter.example/default-jira-plugin-link-application) to learn more.",
+                "help_text": "When **false**, users cannot attach and create Jira issues in Antimatter. Does not affect Jira webhook notifications. Select **false** then disable and re-enable this plugin in **System Console \u003e Plugins \u003e Plugin Management** to reset the plugin state for all users. \n \n When **true**, install this plugin to your Jira instance with '/jira install' to allow users to create and manage issues across Antimatter channels. See [documentation](https://antimatter.chat/docs/admins/apps.html#integrations) to learn more.",
                 "placeholder": "",
                 "default": true
             },

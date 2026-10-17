@@ -150,7 +150,7 @@ func (p *Plugin) stepWelcome() flow.Step {
 			"4. Connect your user account.\n" +
 			"\n" +
 			"You can **Cancel** setup at any time, and use `/jira` command to complete the configuration later. " +
-			"See the [documentation](https://docs.antimatter.example/plugin-jira/setting-up/configuration) for details.").
+			"See the [documentation](https://antimatter.chat/docs/admins/apps.html#integrations) for details.").
 		OnRender(func(f *flow.Flow) {
 			p.trackSetupWizard("setup_wizard_start", map[string]interface{}{
 				"from_invite": f.GetState().GetString(keyDelegatedFromUserID) != "",
@@ -215,7 +215,7 @@ func (p *Plugin) stepChooseEdition() flow.Step {
 		WithPretext("##### :white_check_mark: Step 1: Which Jira edition do you use?").
 		WithTitle("Cloud (OAuth 2.0) or Server (on-premise).").
 		WithText("Choose whether you're using Jira Cloud (OAuth 2.0) or Jira Server (on-premise/Data Center) edition. " +
-			"To integrate with more than one Jira instance, see the [documentation](https://docs.antimatter.example/plugin-jira/)").
+			"To integrate with more than one Jira instance, see the [documentation](https://antimatter.chat/docs/admins/apps.html#integrations)").
 		WithButton(
 			flow.Button{
 				Name:  "Jira Cloud (OAuth 2.0)",
@@ -485,7 +485,7 @@ func (p *Plugin) stepAnnouncementQuestion() flow.Step {
 							"We've added an integration that connects Jira and Antimatter. You can get notified when you are mentioned in Jira comments, " +
 							"or quickly change a message in Antimatter into a ticket in Jira. It's easy to get started, run the `/jira connect` slash " +
 							"command from any channel within Antimatter to connect your user account. See the " +
-							"[documentation](https://docs.antimatter.example/integrate/jira.html#use) for details on using the Jira plugin.",
+							"[documentation](https://antimatter.chat/docs/users/apps.html#dev-tools) for details on using the Jira plugin.",
 						HelpText: "You can edit this message before sending it.",
 					},
 				},
@@ -551,7 +551,7 @@ func (p *Plugin) stepCancel() flow.Step {
 		WithColor(flow.ColorDanger).
 		// WithPretext("##### :no_entry_sign: Canceled").
 		WithText("Jira integration set up has been canceled. Run it again later using the `/jira setup` command, " +
-			"or refer to the [documentation](https://docs.antimatter.example/plugin-jira/setting-up) " +
+			"or refer to the [documentation](https://antimatter.chat/docs/admins/apps.html#integrations) " +
 			"to configure it manually.\n").
 		OnRender(p.trackSetupWizard("setup_wizard_canceled", nil))
 }

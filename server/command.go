@@ -1219,7 +1219,7 @@ func executeWebhookURL(p *Plugin, c *plugin.Context, header *model.CommandArgs, 
 			"Legacy webhook needs to be set up for each channel. For this channel:\n"+
 			"   - `%s`\n"+
 			"   - right-click on [link](%s) and \"Copy Link Address\" to copy\n"+
-			" Visit the [Legacy Webhooks](https://docs.antimatter.example/plugin-jira/administrator-guide/notification-management#legacy-webhooks) page to learn more about this feature.\n"+
+			" Visit the [Legacy Webhooks](https://antimatter.chat/docs/admins/apps.html#integrations) page to learn more about this feature.\n"+
 			"",
 		instanceID, instance.GetManageWebhooksURL(), subWebhookURL, subWebhookURL, legacyWebhookURL, legacyWebhookURL)
 }
